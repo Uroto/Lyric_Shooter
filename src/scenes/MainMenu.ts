@@ -2,7 +2,7 @@ import { Scene, GameObjects } from 'phaser';
 import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
 
 let ready = false;
-let text = "test"
+let text = ""
 
 export class MainMenu extends Scene
 {
@@ -64,6 +64,21 @@ export class MainMenu extends Scene
                 }
             }
         });
+
+        const select = `
+        <select>
+            <option value="" disabled selected style="display:none;">曲を選択してください</option>
+            <option value="https://piapro.jp/t/hZ35/20240130103028">SUPERHERO / めろくる</option>
+            <option value="https://piapro.jp/t/--OD/20240202150903">いつか君と話したミライは / タケノコ少年</option>
+            <option value="https://piapro.jp/t/ELIC/20240130010349">リアリティ / 歩く人</option>
+        </select>
+        `
+        this.add.dom(500, 500).createFromHTML(select);
+        const sel = document.querySelector('select');
+        sel?.addEventListener('change', () => {
+            player.createFromSongUrl(sel.value);
+        });
+        
 
 
         this.textObject = this.add.text(50, 10, text, {
@@ -140,6 +155,7 @@ const player = new Player({
     mediaElement: document.querySelector("#media") as HTMLElement,
 });
 
+
 player.addListener({
     onAppReady,
     onVideoReady,
@@ -150,9 +166,9 @@ function onAppReady(app: IPlayerApp) {
         player.video && player.requestPlay();
         ready = true;
     }
-    if (!app.songUrl) {
-        player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903");
-    }
+    // if (!app.songUrl) {
+    //     player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903");
+    // }
 }
 
 function onVideoReady() {

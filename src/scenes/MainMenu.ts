@@ -1,7 +1,6 @@
 import { Scene, GameObjects } from 'phaser';
 import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
 
-let ready = false;
 const stage = Object.freeze({
     stage1: "1",
     stage2: "2",
@@ -27,17 +26,12 @@ export class MainMenu extends Scene
     constructor ()
     {
         super('MainMenu');
-        this.onAppReady = this.onAppReady.bind(this);
     }
 
     create ()
     {
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0xb0c4de);
-
-        this.player.addListener({
-            onAppReady: this.onAppReady,
-        });
 
         this.registry.set('player', this.player);   
 
@@ -140,13 +134,6 @@ export class MainMenu extends Scene
         // セレクトボックスの位置を更新
         if (this.select) {
             this.select.setPosition(width / 2, height / 2 + 100);
-        }
-    }
-
-    onAppReady(app: IPlayerApp) {
-        if (!app.managed) {     
-            this.player.video && this.player.requestPlay();
-            ready = true;
         }
     }
 

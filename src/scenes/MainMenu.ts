@@ -42,8 +42,8 @@ export class MainMenu extends Scene
         this.registry.set('player', this.player);   
 
         const button = `
-            <button>
-                次のシーンへ移動
+            <button disabled>
+                Play!
             </button>
         `
         const select = `
@@ -73,23 +73,21 @@ export class MainMenu extends Scene
                 });
 
         btn?.addEventListener('click', () => {
-            // if (ready) {
-                if (this.player.video) {
-                    try {
-                        this.player.requestPause(); // まず一時停止
-                        this.player.requestPlay();  // その後再生
-                    } catch (error) {
-                        console.error("再生エラー:", error);
-                    }
+            if (this.player.video) {
+                try {
+                    this.player.requestPause(); // まず一時停止
+                    this.player.requestPlay();  // その後再生
+                } catch (error) {
+                    console.error("再生エラー:", error);
                 }
-            // }
+            }
 
             switch (sel?.value){
                 case stage.stage1:
                     this.scene.start('Game');
                     break;
                 case stage.stage2:
-                    this.scene.launch('GameOver');
+                    this.scene.start('Game');
                     break;
                 case stage.stage3:
                     this.scene.start('Game');
@@ -100,13 +98,19 @@ export class MainMenu extends Scene
         sel?.addEventListener('change', () => {
             switch (sel.value){
                 case stage.stage1:
-                    this.player.createFromSongUrl("https://piapro.jp/t/hZ35/20240130103028");
+                    if (btn) {
+                        this.preparePlay("https://piapro.jp/t/hZ35/20240130103028", btn);
+                    }
                     break;
                 case stage.stage2:
-                    this.player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903")
+                    if (btn) {
+                        this.preparePlay("https://piapro.jp/t/--OD/20240202150903", btn);
+                    }
                     break;
                 case stage.stage3:
-                    this.player.createFromSongUrl("https://piapro.jp/t/ELIC/20240130010349")
+                    if (btn) {
+                        this.preparePlay("https://piapro.jp/t/ELIC/20240130010349", btn);
+                    }
                     break;
             }
         });
@@ -144,5 +148,13 @@ export class MainMenu extends Scene
             this.player.video && this.player.requestPlay();
             ready = true;
         }
+    }
+
+    preparePlay(songUrl:string, btn:HTMLButtonElement) {
+        this.player.video && this.player.requestPlay();
+        this.player.createFromSongUrl(songUrl)
+                    .then(() => {
+                        btn.removeAttribute('disabled');
+                    });
     }
 }

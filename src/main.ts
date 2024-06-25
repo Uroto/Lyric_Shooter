@@ -13,9 +13,10 @@ const config: Types.Core.GameConfig = {
     width: window.innerWidth,
     height: window.innerHeight,
     parent: 'game-container',
+    fullscreenTarget: 'game-container',
     backgroundColor: '#000000',
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     scene: [

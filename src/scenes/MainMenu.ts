@@ -2,33 +2,68 @@ import { Scene, GameObjects } from 'phaser';
 import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
 
 let ready = false;
-let text = ""
+const stage = Object.freeze({
+    stage1: "1",
+    stage2: "2",
+    stage3: "3",
+});
 
 export class MainMenu extends Scene
 {
-    background: GameObjects.Image | undefined;
-    background_scroll: Phaser.GameObjects.TileSprite | undefined;
-    logo: GameObjects.Image | undefined;
-    title: GameObjects.Text | undefined;
-    textObjects: Phaser.GameObjects.Text[] = [];
-    textObject: GameObjects.Text | undefined;
+    camera: Phaser.Cameras.Scene2D.Camera | undefined;
+    text = ""
     isFullscreen: boolean = false;
     previousText: string = "";
+    player: Player = new Player({
+        app: {
+            token: "j2L2DUexqaXONLyI",
+        },
+        mediaElement: document.querySelector("#media") as HTMLElement,
+    });
+    logo: Phaser.GameObjects.Image | undefined;
+    button: Phaser.GameObjects.DOMElement | undefined;
+    select: Phaser.GameObjects.DOMElement | undefined;
 
     constructor ()
     {
         super('MainMenu');
+        this.onAppReady = this.onAppReady.bind(this);
     }
 
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'background')
-            .setOrigin(0, 0);
+        this.camera = this.cameras.main;
+        this.camera.setBackgroundColor(0xb0c4de);
+
+        this.player.addListener({
+            onAppReady: this.onAppReady,
+        });
+
+        this.registry.set('player', this.player);   
+
+        const button = `
+            <button>
+                次のシーンへ移動
+            </button>
+        `
+        const select = `
+            <select>
+                <option value="" disabled selected style="display:none;">曲を選択してください</option>
+                <option value="1">SUPERHERO / めろくる</option>
+                <option value="2">いつか君と話したミライは / タケノコ少年</option>
+                <option value="3">リアリティ / 歩く人</option>
+            </select>
+        `
+
+        this.logo = this.add.image(950, 300, 'logo');
+        this.button = this.add.dom(950, 600).createFromHTML(button);
+        this.select = this.add.dom(950, window.innerHeight / 2).createFromHTML(select);
+        const btn = document.querySelector('button');
+        const sel = document.querySelector('select');
 
         this.add.text(10, 10, '＋')
                 .setInteractive()
                 .on('pointerup', () => {
-                    alert("クリック");
                     if (this.isFullscreen) {
                         this.scale.stopFullscreen();
                     } else {
@@ -37,151 +72,77 @@ export class MainMenu extends Scene
                     this.isFullscreen = !this.isFullscreen;
                 });
 
-        this.add.text(50, 10, "再生")
-                .setInteractive()
-                .on('pointerup', () => {
-                    alert("再生");
-                });
-
-        const button = `
-            <button disabled>
-                次のシーンへ移動
-            </button>
-        `
-        this.add.dom(500, 10).createFromHTML(button);
-
-        const btn = document.querySelector('button');
         btn?.addEventListener('click', () => {
-            this.scene.start('Game');
-            if (ready) {
-                if (player.video) {
+            // if (ready) {
+                if (this.player.video) {
                     try {
-                        player.requestPause(); // まず一時停止
-                        player.requestPlay();  // その後再生
+                        this.player.requestPause(); // まず一時停止
+                        this.player.requestPlay();  // その後再生
                     } catch (error) {
                         console.error("再生エラー:", error);
                     }
                 }
+            // }
+
+            switch (sel?.value){
+                case stage.stage1:
+                    this.scene.start('Game');
+                    break;
+                case stage.stage2:
+                    this.scene.launch('GameOver');
+                    break;
+                case stage.stage3:
+                    this.scene.start('Game');
+                    break;
             }
         });
 
-        const select = `
-        <select>
-            <option value="" disabled selected style="display:none;">曲を選択してください</option>
-            <option value="https://piapro.jp/t/hZ35/20240130103028">SUPERHERO / めろくる</option>
-            <option value="https://piapro.jp/t/--OD/20240202150903">いつか君と話したミライは / タケノコ少年</option>
-            <option value="https://piapro.jp/t/ELIC/20240130010349">リアリティ / 歩く人</option>
-        </select>
-        `
-        this.add.dom(500, 500).createFromHTML(select);
-        const sel = document.querySelector('select');
         sel?.addEventListener('change', () => {
-            player.createFromSongUrl(sel.value);
+            switch (sel.value){
+                case stage.stage1:
+                    this.player.createFromSongUrl("https://piapro.jp/t/hZ35/20240130103028");
+                    break;
+                case stage.stage2:
+                    this.player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903")
+                    break;
+                case stage.stage3:
+                    this.player.createFromSongUrl("https://piapro.jp/t/ELIC/20240130010349")
+                    break;
+            }
         });
-        
 
+        this.scale.on('resize', this.resize, this);
+    }
 
-        this.textObject = this.add.text(50, 10, text, {
-            fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
-        });
+    resize(gameSize: Phaser.Structs.Size) {
+        const width = gameSize.width;
+        const height = gameSize.height;
 
-        if (this.textObject) {
-            // テキストオブジェクトを物理エンティティとして追加
-            this.physics.add.existing(this.textObject);
+        // カメラのサイズを更新
+        if (this.cameras.main) {
+            this.cameras.main.setSize(width, height);
+        }
 
-            // 物理プロパティを設定
-            const textBody = this.textObject.body as Phaser.Physics.Arcade.Body;
-            textBody.setCollideWorldBounds(true);
-            textBody.setVelocity(100, 200); // 任意の速度を設定
-            textBody.setBounce(1, 1); // 反発係数を設定
+        // ロゴの位置を更新
+        if (this.logo) {
+            this.logo.setPosition(width / 2, height / 4);
+        }
 
-            // 初期のテキストオブジェクトをリストに追加
-            this.textObjects.push(this.textObject);
+        // ボタンの位置を更新
+        if (this.button) {
+            this.button.setPosition(width / 2, height / 2);
+        }
+
+        // セレクトボックスの位置を更新
+        if (this.select) {
+            this.select.setPosition(width / 2, height / 2 + 100);
         }
     }
 
-    update(time: number, delta: number): void {
-        // 背景をスクロールさせる
-        if (this.background_scroll) {
-            this.background_scroll.tilePositionX += 1; // X方向にスクロール
-            this.background_scroll.tilePositionY += 0.5; // Y方向にスクロール（必要に応じて調整）
+    onAppReady(app: IPlayerApp) {
+        if (!app.managed) {     
+            this.player.video && this.player.requestPlay();
+            ready = true;
         }
-        if (text !== this.previousText) {
-            // 新しいテキストオブジェクトを作成して追加
-            const newTextObject = this.add.text(50, 10 + this.textObjects.length * 30, text, {
-                fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
-            });
-
-            // 新しいテキストオブジェクトを物理エンティティとして追加
-            this.physics.add.existing(newTextObject);
-
-            // 物理プロパティを設定
-            const newTextBody = newTextObject.body as Phaser.Physics.Arcade.Body;
-            newTextBody.setCollideWorldBounds(true);
-            newTextBody.setVelocity(100, 200); // 任意の速度を設定
-            newTextBody.setBounce(1, 1); // 反発係数を設定
-
-            // 新しいテキストオブジェクトをリストに追加
-            this.textObjects.push(newTextObject);
-
-            // 前回のテキストを更新
-            this.previousText = text;
-        }
-
-        if (ready) {
-            const btn = document.querySelector('button');
-            btn?.removeAttribute('disabled');
-        }
-    }
-
-
-}
-
-// 単語が発声されていたら #text に表示する
-// Show words being vocalized in #text
-const animateWord = function (now: number, unit: IRenderingUnit) {
-    const word = unit as IWord;
-    if (word.contains(now)) {
-      text = word.text;
-    }
-};
-   
-// TextAlive Player を作る
-// Instantiate a TextAlive Player instance
-const player = new Player({
-    app: {
-        token: "j2L2DUexqaXONLyI",
-    },
-    mediaElement: document.querySelector("#media") as HTMLElement,
-});
-
-
-player.addListener({
-    onAppReady,
-    onVideoReady,
-});
-
-function onAppReady(app: IPlayerApp) {
-    if (!app.managed) {     
-        player.video && player.requestPlay();
-        ready = true;
-    }
-    // if (!app.songUrl) {
-    //     player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903");
-    // }
-}
-
-function onVideoReady() {
-    // メタデータを表示する
-    // Show meta data
-   //  artistSpan.textContent = player.data.song.artist.name;
-   //  songSpan.textContent = player.data.song.name;
-   
-    // 定期的に呼ばれる各単語の "animate" 関数をセットする
-    // Set "animate" function
-    let w: IWord = player.video.firstWord;
-    while (w) {
-        w.animate = animateWord;
-        w = w.next;
     }
 }

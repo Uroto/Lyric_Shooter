@@ -3,6 +3,11 @@ import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
 
 let ready = false;
 let text = ""
+const stage = Object.freeze({
+    stage1: "1",
+    stage2: "2",
+    stage3: "3",
+});
 
 export class MainMenu extends Scene
 {
@@ -37,12 +42,6 @@ export class MainMenu extends Scene
                     this.isFullscreen = !this.isFullscreen;
                 });
 
-        this.add.text(50, 10, "再生")
-                .setInteractive()
-                .on('pointerup', () => {
-                    alert("再生");
-                });
-
         const button = `
             <button disabled>
                 次のシーンへ移動
@@ -51,8 +50,19 @@ export class MainMenu extends Scene
         this.add.dom(500, 10).createFromHTML(button);
 
         const btn = document.querySelector('button');
+
+        const select = `
+        <select>
+            <option value="" disabled selected style="display:none;">曲を選択してください</option>
+            <option value="1">SUPERHERO / めろくる</option>
+            <option value="2">いつか君と話したミライは / タケノコ少年</option>
+            <option value="3">リアリティ / 歩く人</option>
+        </select>
+        `
+        this.add.dom(500, 500).createFromHTML(select);
+        const sel = document.querySelector('select');
+
         btn?.addEventListener('click', () => {
-            this.scene.start('Game');
             if (ready) {
                 if (player.video) {
                     try {
@@ -63,20 +73,32 @@ export class MainMenu extends Scene
                     }
                 }
             }
+
+            switch (sel?.value){
+                case stage.stage1:
+                    this.scene.start('Game');
+                    break;
+                case stage.stage2:
+                    this.scene.launch('GameOver');
+                    break;
+                case stage.stage3:
+                    this.scene.start('Game');
+                    break;
+            }
         });
 
-        const select = `
-        <select>
-            <option value="" disabled selected style="display:none;">曲を選択してください</option>
-            <option value="https://piapro.jp/t/hZ35/20240130103028">SUPERHERO / めろくる</option>
-            <option value="https://piapro.jp/t/--OD/20240202150903">いつか君と話したミライは / タケノコ少年</option>
-            <option value="https://piapro.jp/t/ELIC/20240130010349">リアリティ / 歩く人</option>
-        </select>
-        `
-        this.add.dom(500, 500).createFromHTML(select);
-        const sel = document.querySelector('select');
         sel?.addEventListener('change', () => {
-            player.createFromSongUrl(sel.value);
+            switch (sel.value){
+                case stage.stage1:
+                    player.createFromSongUrl("https://piapro.jp/t/hZ35/20240130103028");
+                    break;
+                case stage.stage2:
+                    player.createFromSongUrl("https://piapro.jp/t/--OD/20240202150903")
+                    break;
+                case stage.stage3:
+                    player.createFromSongUrl("https://piapro.jp/t/ELIC/20240130010349")
+                    break;
+            }
         });
         
 

@@ -155,9 +155,6 @@ export class Game extends Scene
     }
 
     touch(player: GameObjects.GameObject, text: GameObjects.GameObject){
-        console.log("Touch function called"); // デバッグ用ログ
-        console.log("Player:", player); // デバッグ用ログ
-        console.log("Text:", text); // デバッグ用ログ
         const textBody = text.body as Phaser.Physics.Arcade.Body;
         textBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);

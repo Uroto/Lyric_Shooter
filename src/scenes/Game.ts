@@ -58,32 +58,6 @@ export class Game extends Scene
         this.keyD = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
         this.physics.add.collider(this.gamePlayer, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
-
-        // const heavyTextObject = this.add.text(50, 10, "Heavy Text", {
-        //     fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
-        // });
-        // this.physics.add.existing(heavyTextObject);
-        // const heavyTextBody = heavyTextObject.body as Phaser.Physics.Arcade.Body;
-        // heavyTextBody.setCollideWorldBounds(true);
-        // heavyTextBody.setBounce(0.5);
-        // heavyTextBody.allowGravity = true;
-        // heavyTextBody.mass = 5000; // 大きな質量
-        
-        // const lightTextObject = this.add.text(50, 50, "Light Text", {
-        //     fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
-        // });
-        // this.physics.add.existing(lightTextObject);
-        // const lightTextBody = lightTextObject.body as Phaser.Physics.Arcade.Body;
-        // lightTextBody.setCollideWorldBounds(true);
-        // lightTextBody.setBounce(0.5);
-        // lightTextBody.allowGravity = true;
-        // lightTextBody.mass = 500; // 小さな質量
-
-        // this.input.once('pointerdown', () => {
-
-        //     this.scene.launch('GameOver');
-
-        // });
     }
 
     update(time: number, delta: number): void {

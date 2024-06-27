@@ -15,6 +15,8 @@ export class Game extends Scene
     keyA: Phaser.Input.Keyboard.Key | undefined;
     keyS: Phaser.Input.Keyboard.Key | undefined;
     keyD: Phaser.Input.Keyboard.Key | undefined;
+    score = 0;
+    scoreText: GameObjects.Text | undefined;
 
     constructor ()
     {
@@ -29,6 +31,10 @@ export class Game extends Scene
         this.player = this.registry.get('player');
 
         this.textObject = this.add.text(50, 10, this.text, {
+            fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
+        });
+
+        this.scoreText = this.add.text(0, 10, "SCORE: " + this.score.toString(), {
             fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
         });
 
@@ -158,5 +164,7 @@ export class Game extends Scene
         const textBody = text.body as Phaser.Physics.Arcade.Body;
         textBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);
+        this.score += (text as Phaser.GameObjects.Text).text.length * 10;
+        this.scoreText?.setText("SCORE: " + this.score.toString());
     };
 }

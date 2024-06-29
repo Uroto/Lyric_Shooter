@@ -33,7 +33,9 @@ export class MainMenu extends Scene
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0xb0c4de);
 
-        this.registry.set('player', this.player);   
+        this.registry.set('player', this.player);
+
+        this.registry.set('score', 0);
 
         const button = `
             <button disabled>

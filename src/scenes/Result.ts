@@ -17,7 +17,6 @@ export class Result extends Scene
     create ()
     {
         this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background');
-        this.background.setAlpha(0.5);
 
         this.player = this.registry.get('player');
 

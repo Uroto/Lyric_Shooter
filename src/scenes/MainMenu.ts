@@ -130,12 +130,12 @@ export class MainMenu extends Scene
 
         // ボタンの位置を更新
         if (this.button) {
-            this.button.setPosition(width / 2, height / 2);
+            this.button.setPosition(width / 2, height / 2 + 100);
         }
 
         // セレクトボックスの位置を更新
         if (this.select) {
-            this.select.setPosition(width / 2, height / 2 + 100);
+            this.select.setPosition(width / 2, height / 2);
         }
     }
 

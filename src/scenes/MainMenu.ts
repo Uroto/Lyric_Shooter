@@ -33,7 +33,9 @@ export class MainMenu extends Scene
         this.camera = this.cameras.main;
         this.camera.setBackgroundColor(0xb0c4de);
 
-        this.registry.set('player', this.player);   
+        this.registry.set('player', this.player);
+
+        this.registry.set('score', 0);
 
         const button = `
             <button disabled>
@@ -128,12 +130,12 @@ export class MainMenu extends Scene
 
         // ボタンの位置を更新
         if (this.button) {
-            this.button.setPosition(width / 2, height / 2);
+            this.button.setPosition(width / 2, height / 2 + 100);
         }
 
         // セレクトボックスの位置を更新
         if (this.select) {
-            this.select.setPosition(width / 2, height / 2 + 100);
+            this.select.setPosition(width / 2, height / 2);
         }
     }
 

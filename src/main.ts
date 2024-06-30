@@ -1,5 +1,7 @@
 import { Boot } from './scenes/Boot';
-import { Game as MainGame } from './scenes/Game';
+import { Stage1 } from './scenes/Stage1';
+import { Stage2 } from './scenes/Stage2';
+import { Stage3 } from './scenes/Stage3';
 import { Result } from './scenes/Result';
 import { MainMenu } from './scenes/MainMenu';
 import { Preloader } from './scenes/Preloader';
@@ -23,7 +25,9 @@ const config: Types.Core.GameConfig = {
         Boot,
         Preloader,
         MainMenu,
-        MainGame,
+        Stage1,
+        Stage2,
+        Stage3,
         Result
     ],
     dom: {

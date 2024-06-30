@@ -1,7 +1,7 @@
 import { Scene, GameObjects } from 'phaser';
 import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
 
-export class Game extends Scene
+export class Stage2 extends Scene
 {
     background: GameObjects.Image | undefined;
     background_scroll: Phaser.GameObjects.TileSprite | undefined;
@@ -10,7 +10,8 @@ export class Game extends Scene
     text = ""
     previousText: string = "";
     player: Player | undefined;
-    gamePlayer: GameObjects.Star | undefined;
+    gamePlayer: GameObjects.Arc | undefined;
+    bullets: GameObjects.Group | undefined;
     keyW: Phaser.Input.Keyboard.Key | undefined;
     keyA: Phaser.Input.Keyboard.Key | undefined;
     keyS: Phaser.Input.Keyboard.Key | undefined;
@@ -20,7 +21,7 @@ export class Game extends Scene
 
     constructor ()
     {
-        super('Game');
+        super('Stage2');
         this.animatedWord = this.animatedWord.bind(this);
     }
 
@@ -29,6 +30,8 @@ export class Game extends Scene
         this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'background')
             .setOrigin(0, 0);
         this.player = this.registry.get('player');
+
+        this.bullets = this.physics.add.group();
 
         this.score = 0;
         this.scoreText = this.add.text(0, 10, "SCORE: " + this.score.toString(), {
@@ -41,7 +44,7 @@ export class Game extends Scene
         // 歌詞情報の準備
         this.prepareLyrics();
 
-        this.gamePlayer = this.add.star(1000, 500, 5, 32, 64, 0xffff00, 1);
+        this.gamePlayer = this.add.circle(1500, 500, 50, 0xffff00, 1);
         this.physics.add.existing(this.gamePlayer);
 
         // 重力の影響を受けないように設定
@@ -54,16 +57,45 @@ export class Game extends Scene
         this.keyS = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-        this.physics.add.collider(this.gamePlayer, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
+        this.physics.add.collider(this.gamePlayer, this.textObjects);
+        this.physics.add.collider(this.bullets, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
+        this.physics.world.on('worldbounds', (body: Phaser.Physics.Arcade.Body) => {
+            if (this.bullets?.contains(body.gameObject)) {
+                this.handleWorldBoundsCollision(body);
+            }
+        });
 
         this.add.text(200, 10, "FINISH", {fontFamily: 'Arial', fontSize: 24, color: '#ffffff'})
                 .setInteractive()
                 .on('pointerdown', () => {
-                    this.scene.pause('Game');
+                    this.scene.pause('Stage2');
                     this.player?.requestPause();
                     this.scene.launch('Result');
                     this.registry.set('score', this.score);
                 });
+
+        this.input.mouse?.disableContextMenu();
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            if (pointer.leftButtonDown()) {
+                const bullet = this.add.circle(this.gamePlayer?.x, this.gamePlayer?.y, 10, 0xffff00, 1);
+                this.physics.add.existing(bullet);
+                this.bullets?.add(bullet);
+
+                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                bulletBody.setVelocity(-300, 0);
+                bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                bulletBody.allowGravity = false;
+            } else if (pointer.rightButtonDown()) {
+                const bullet = this.add.circle(this.gamePlayer?.x, this.gamePlayer?.y, 10, 0xffff00, 1);
+                this.physics.add.existing(bullet);
+                this.bullets?.add(bullet);
+
+                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                bulletBody.setVelocity(300, 0);
+                bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                bulletBody.allowGravity = false;
+            }
+        });
 
     }
 
@@ -75,8 +107,8 @@ export class Game extends Scene
         }
 
         if (this.text !== this.previousText) {
-            // 新しいテキストオブジェクトを作成して追加
-            const newTextObject = this.add.text(50, 50, this.text, {
+            const randomHeight = Math.random() * window.innerHeight;
+            const newTextObject = this.add.text(50, randomHeight, this.text, {
                 fontFamily: 'Arial', fontSize: 40, color: '#ffff00'
             });
 
@@ -87,9 +119,9 @@ export class Game extends Scene
             // 物理プロパティを設定
             const newTextBody = newTextObject.body as Phaser.Physics.Arcade.Body;
             newTextBody.setCollideWorldBounds(true);
-            const randomVelocity = Math.random() * 300;
-            newTextBody.setVelocity(randomVelocity, 250); // 任意の速度を設定
+            newTextBody.setVelocity(200, 0); // 任意の速度を設定
             newTextBody.setBounce(0.8 - this.text.length * 0.05); // 反発係数を設定 
+            newTextBody.allowGravity = false;
 
             // 前回のテキストを更新
             this.previousText = this.text;
@@ -124,8 +156,9 @@ export class Game extends Scene
         }
 
         if (!this.player?.isPlaying) {
-            this.scene.pause('Game');
+            this.scene.pause('Stage2');
             this.player?.requestPause();
+            this.registry.set('score', this.score);
             this.scene.launch('Result');
         }
     }
@@ -147,11 +180,21 @@ export class Game extends Scene
         }
     }
 
-    touch(player: GameObjects.GameObject, text: GameObjects.GameObject){
+    touch(bullet: GameObjects.GameObject, text: GameObjects.GameObject){
         const textBody = text.body as Phaser.Physics.Arcade.Body;
+        const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
         textBody.enable = false;
+        bulletBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);
+        (bullet as Phaser.GameObjects.Arc).setVisible(false);
         this.score += (text as Phaser.GameObjects.Text).text.length * 10;
         this.scoreText?.setText("SCORE: " + this.score.toString());
     };
+
+    handleWorldBoundsCollision(body: Phaser.Physics.Arcade.Body) {
+        if (body.gameObject) {
+            (body.gameObject as Phaser.GameObjects.Arc).setVisible(false);
+            body.enable = false;
+        }
+    }
 }

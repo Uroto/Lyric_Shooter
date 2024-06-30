@@ -32,7 +32,9 @@ export class Result extends Scene
         }).setOrigin(0.5)
           .setInteractive()
           .on('pointerdown', () => {
-            this.scene.stop('Game');
+            this.scene.stop('Stage1');
+            this.scene.stop('Stage2');
+            this.scene.stop('Stage3');
             this.scene.stop('Result');
 
             if (this.player?.video) {
@@ -44,7 +46,7 @@ export class Result extends Scene
                 }
             }
             this.registry.set('score', 0);
-            this.scene.start('Game');
+            this.scene.start('Stage1');
           });
 
           this.add.text(window.innerWidth / 2, window.innerHeight / 2 + 200, 'Back to Main Menu', {
@@ -53,14 +55,16 @@ export class Result extends Scene
         }).setOrigin(0.5)
           .setInteractive()
           .on('pointerdown', () => {
-            this.scene.stop('Game');
+            this.scene.stop('Stage1');
+            this.scene.stop('Stage2');
+            this.scene.stop('Stage3');
             this.scene.stop('Result');
             this.scene.start('MainMenu');
           });
 
         // this.input.once('pointerdown', () => {
 
-        //     this.scene.stop('Game');
+        //     this.scene.stop('Stage1');
         //     this.scene.stop('Result');
         //     this.scene.start('MainMenu');
 

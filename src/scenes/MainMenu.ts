@@ -80,13 +80,25 @@ export class MainMenu extends Scene
 
             switch (sel?.value){
                 case stage.stage1:
-                    this.scene.start('Game');
+                    this.scene.stop('Stage1');
+                    this.scene.stop('Stage2');
+                    this.scene.stop('Stage3');
+                    this.scene.stop('MainMenu');
+                    this.scene.start('Stage1');
                     break;
                 case stage.stage2:
-                    this.scene.start('Game');
+                    this.scene.stop('Stage1');
+                    this.scene.stop('Stage2');
+                    this.scene.stop('Stage3');
+                    this.scene.stop('MainMenu');
+                    this.scene.start('Stage2');
                     break;
                 case stage.stage3:
-                    this.scene.start('Game');
+                    this.scene.stop('Stage1');
+                    this.scene.stop('Stage2');
+                    this.scene.stop('Stage3');
+                    this.scene.stop('MainMenu');
+                    this.scene.start('Stage3');
                     break;
             }
         });

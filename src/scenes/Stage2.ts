@@ -10,7 +10,7 @@ export class Stage2 extends Scene
     text = ""
     previousText: string = "";
     player: Player | undefined;
-    gamePlayer: GameObjects.Arc | undefined;
+    gamePlayer: GameObjects.Sprite | undefined;
     bullets: GameObjects.Group | undefined;
     keyW: Phaser.Input.Keyboard.Key | undefined;
     keyA: Phaser.Input.Keyboard.Key | undefined;
@@ -25,17 +25,26 @@ export class Stage2 extends Scene
         this.animatedWord = this.animatedWord.bind(this);
     }
 
+    preload ()
+    {
+        this.load.image('negi', 'assets/negi.png');
+        this.load.image('back_stage2', 'assets/stage2_dot.png');
+        this.load.image('night-sky1', 'assets/night-sky1.jpg');
+        this.load.spritesheet('miku_fly', 'assets/miku_fly.png', { frameWidth: 256, frameHeight: 128 });
+    }
+
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'background')
-            .setOrigin(0, 0);
+        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'back_stage2')
+            .setOrigin(0, 0)
+            .setAlpha(0.9);
         this.player = this.registry.get('player');
 
         this.bullets = this.physics.add.group();
 
         this.score = 0;
-        this.scoreText = this.add.text(0, 10, "SCORE: " + this.score.toString(), {
-            fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
+        this.scoreText = this.add.text(10, 10, "SCORE: " + this.score.toString(), {
+            fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'
         });
 
         // テキストオブジェクトのグループを作成
@@ -44,8 +53,22 @@ export class Stage2 extends Scene
         // 歌詞情報の準備
         this.prepareLyrics();
 
-        this.gamePlayer = this.add.circle(1500, 500, 50, 0xffff00, 1);
+        this.gamePlayer = this.add.sprite(1500, 500, 'miku_fly');
         this.physics.add.existing(this.gamePlayer);
+
+        this.anims.create({
+            key: 'left',
+            frames: [ { key: 'miku_fly', frame: 0 } ],
+            frameRate: 10,
+        });
+
+        this.anims.create({
+            key: 'right',
+            frames: [ { key: 'miku_fly', frame: 1 } ],
+            frameRate: 10,
+        });
+
+        this.gamePlayer.anims.play('left');
 
         // 重力の影響を受けないように設定
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
@@ -65,7 +88,7 @@ export class Stage2 extends Scene
             }
         });
 
-        this.add.text(200, 10, "FINISH", {fontFamily: 'Arial', fontSize: 24, color: '#ffffff'})
+        this.add.text(200, 10, "FINISH", {fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'})
                 .setInteractive()
                 .on('pointerdown', () => {
                     this.scene.pause('Stage2');
@@ -76,25 +99,19 @@ export class Stage2 extends Scene
 
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            const bullet = this.add.image((this.gamePlayer?.x ?? 0) - (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
+            this.physics.add.existing(bullet);
+            this.bullets?.add(bullet);
+
+            const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
             if (pointer.leftButtonDown()) {
-                const bullet = this.add.circle(this.gamePlayer?.x, this.gamePlayer?.y, 10, 0xffff00, 1);
-                this.physics.add.existing(bullet);
-                this.bullets?.add(bullet);
-
-                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
                 bulletBody.setVelocity(-300, 0);
-                bulletBody.setCollideWorldBounds(true, 1, 1, true);
-                bulletBody.allowGravity = false;
             } else if (pointer.rightButtonDown()) {
-                const bullet = this.add.circle(this.gamePlayer?.x, this.gamePlayer?.y, 10, 0xffff00, 1);
-                this.physics.add.existing(bullet);
-                this.bullets?.add(bullet);
-
-                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
                 bulletBody.setVelocity(300, 0);
-                bulletBody.setCollideWorldBounds(true, 1, 1, true);
-                bulletBody.allowGravity = false;
             }
+            
+            bulletBody.setCollideWorldBounds(true, 1, 1, true);
+            bulletBody.allowGravity = false;
         });
 
     }
@@ -103,13 +120,12 @@ export class Stage2 extends Scene
         // 背景をスクロールさせる
         if (this.background_scroll) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール
-            this.background_scroll.tilePositionY += 0.5; // Y方向にスクロール（必要に応じて調整）
         }
 
         if (this.text !== this.previousText) {
             const randomHeight = Math.random() * window.innerHeight;
             const newTextObject = this.add.text(50, randomHeight, this.text, {
-                fontFamily: 'Arial', fontSize: 40, color: '#ffff00'
+                fontFamily: 'maruikoasu', fontSize: 40, color: '#ffff00'
             });
 
             // 新しいテキストオブジェクトを物理エンティティとして追加
@@ -142,6 +158,7 @@ export class Stage2 extends Scene
         if (this.keyA?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = -200;
+                this.gamePlayer.anims.play('left');
             }
         }
         if (this.keyS?.isDown) {
@@ -152,6 +169,7 @@ export class Stage2 extends Scene
         if (this.keyD?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = 200;
+                this.gamePlayer.anims.play('right');
             }
         }
 

@@ -10,7 +10,7 @@ export class Stage3 extends Scene
     text = ""
     previousText: string = "";
     player: Player | undefined;
-    gamePlayer: GameObjects.Star | undefined;
+    gamePlayer: GameObjects.Sprite | undefined;
     score: number = 0;
     scoreText: GameObjects.Text | undefined;
 
@@ -21,18 +21,19 @@ export class Stage3 extends Scene
     }
 
     preload() {
-        this.load.audio('scoreSound', 'assets/score.mp3');
+        this.load.image('back_stage3', 'assets/back_stage3.png');
+        this.load.spritesheet('hachunemiku', 'assets/hachunemiku_sprite.png', { frameWidth: 512, frameHeight: 512 });
     }
 
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'background')
+        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'back_stage3')
             .setOrigin(0, 0);
         this.player = this.registry.get('player');
 
         this.score = 0;
-        this.scoreText = this.add.text(0, 10, "SCORE: " + this.score.toString(), {
-            fontFamily: 'Arial', fontSize: 24, color: '#ffffff'
+        this.scoreText = this.add.text(10, 10, "SCORE: " + this.score.toString(), {
+            fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'
         });
 
         // テキストオブジェクトのグループを作成
@@ -41,15 +42,34 @@ export class Stage3 extends Scene
         // 歌詞情報の準備
         this.prepareLyrics();
 
-        this.gamePlayer = this.add.star(window.innerWidth - 50, window.innerHeight - 50, 5, 128, 256, 0xffff00, 1);
+        this.gamePlayer = this.add.sprite(window.innerWidth - 50, window.innerHeight - 50, 'hachunemiku');
         this.physics.add.existing(this.gamePlayer);
+
+        this.anims.create({
+            key: 'idle',
+            frames: [ { key: 'hachunemiku', frame: 0 } ],
+            frameRate: 10,
+        });
+
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('hachunemiku', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'swing',
+            frames: this.anims.generateFrameNumbers('hachunemiku', { start: 4, end: 7 }),
+            frameRate: 10,
+        });
 
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
         gamePlayerBody.setCollideWorldBounds(true);
 
         this.physics.add.overlap(this.gamePlayer, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
 
-        this.add.text(200, 10, "FINISH", {fontFamily: 'Arial', fontSize: 24, color: '#ffffff'})
+        this.add.text(200, 10, "FINISH", {fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'})
                 .setInteractive()
                 .on('pointerdown', () => {
                     this.scene.pause('Stage3');
@@ -58,23 +78,33 @@ export class Stage3 extends Scene
                     this.registry.set('score', this.score);
                 });
 
+        this.gamePlayer.anims.play('walk');
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            if (pointer.leftButtonDown()) {
+                this.gamePlayer?.anims.play('swing');
+            }
+        });
+
+        this.gamePlayer?.on('animationcomplete-swing', () => {
+            this.gamePlayer?.anims.play('walk');
+        }, this);
+
     }
 
     update(time: number, delta: number): void {
         // 背景をスクロールさせる
         if (this.background_scroll) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール
-            this.background_scroll.tilePositionY += 0.5; // Y方向にスクロール（必要に応じて調整）
         }
 
         if (this.text !== this.previousText) {
             // 新しいテキストオブジェクトを作成して追加
-            let fontSize = this.text.length * 50;
+            let fontSize = this.text.length * 70;
             if (fontSize > window.innerHeight) {
                 fontSize = window.innerHeight;
             }
             const newTextObject = this.add.text(10, window.innerHeight - 10, this.text, {
-                fontFamily: 'Arial', fontSize: fontSize, color: '#ffff00'
+                fontFamily: 'pop', fontSize: fontSize, color: '#000000'
             });
 
             // 新しいテキストオブジェクトを物理エンティティとして追加
@@ -123,7 +153,17 @@ export class Stage3 extends Scene
         this.input.once('pointerdown', (pointer: Phaser.Input.Pointer) => {
             if (pointer.leftButtonDown()) {
                 this.score += (text as Phaser.GameObjects.Text).text.length * 10;
-                this.sound.play('scoreSound');
+
+                // スコアアップのテキストを表示
+                const scoreUpText = this.add.text(this.gamePlayer?.x ?? 0, (this.gamePlayer?.y ?? 0) - (this.gamePlayer?.height ?? 0) / 2, "score up!!", {
+                    fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ff0000'
+                });
+                this.time.addEvent({
+                    delay: 500,
+                    callback: () => {
+                        scoreUpText.destroy();
+                    }
+                });
             }
         });
         this.scoreText?.setText("SCORE: " + this.score.toString());

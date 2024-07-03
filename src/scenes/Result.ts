@@ -4,7 +4,7 @@ import { Player } from 'textalive-app-api';
 export class Result extends Scene
 {
     camera: Phaser.Cameras.Scene2D.Camera | undefined;
-    background: Phaser.GameObjects.Image | undefined;
+    background: Phaser.GameObjects.Graphics | undefined;
     gameover_text : Phaser.GameObjects.Text | undefined;
     score: number | undefined;
     player: Player | undefined;
@@ -16,7 +16,10 @@ export class Result extends Scene
 
     create ()
     {
-        this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background');
+        this.background = this.add.graphics()
+                                  .fillStyle(0x000000, 1)
+                                  .fillRoundedRect(window.innerWidth / 4, window.innerHeight / 4, window.innerWidth / 2, window.innerHeight / 2, 20)
+                                  .setAlpha(0.8);
 
         this.player = this.registry.get('player');
 

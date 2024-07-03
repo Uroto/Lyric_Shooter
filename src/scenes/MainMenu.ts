@@ -9,7 +9,7 @@ const stage = Object.freeze({
 
 export class MainMenu extends Scene
 {
-    camera: Phaser.Cameras.Scene2D.Camera | undefined;
+    background: Phaser.GameObjects.Image | undefined;
     text = ""
     isFullscreen: boolean = false;
     previousText: string = "";
@@ -28,34 +28,40 @@ export class MainMenu extends Scene
         super('MainMenu');
     }
 
+    preload ()
+    {
+        this.load.image('spaceship1', 'assets/spaceship1.png');
+    }
+
     create ()
     {
-        this.camera = this.cameras.main;
-        this.camera.setBackgroundColor(0xb0c4de);
+        this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'spaceship1');
 
         this.registry.set('player', this.player);
 
         this.registry.set('score', 0);
 
         const button = `
-            <button disabled>
+            <button class="button is-white" disabled>
                 Play!
             </button>
         `
         const select = `
-            <select>
-                <option value="" disabled selected style="display:none;">曲を選択してください</option>
-                <option value="1">SUPERHERO / めろくる</option>
-                <option value="2">いつか君と話したミライは / タケノコ少年</option>
-                <option value="3">リアリティ / 歩く人</option>
-            </select>
+            <div class="select is-link">
+                <select>
+                    <option value="" disabled selected style="display:none;">曲を選択してください</option>
+                    <option value="1">SUPERHERO / めろくる</option>
+                    <option value="2">いつか君と話したミライは / タケノコ少年</option>
+                    <option value="3">リアリティ / 歩く人</option>
+                </select>
+            </div>
         `
 
-        this.logo = this.add.image(950, 300, 'logo');
-        this.button = this.add.dom(950, 600).createFromHTML(button);
-        this.select = this.add.dom(950, window.innerHeight / 2).createFromHTML(select);
-        const btn = document.querySelector('button');
+        this.logo = this.add.image(window.innerWidth / 2, window.innerHeight / 4, 'logo');
+        this.select = this.add.dom(window.innerWidth / 2, window.innerHeight / 2).createFromHTML(select);
+        this.button = this.add.dom(window.innerWidth / 2, window.innerHeight / 2 + window.innerHeight / 4).createFromHTML(button);
         const sel = document.querySelector('select');
+        const btn = document.querySelector('button');
 
         this.add.text(10, 10, '＋')
                 .setInteractive()

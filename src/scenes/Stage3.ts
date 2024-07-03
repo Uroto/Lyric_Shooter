@@ -21,12 +21,13 @@ export class Stage3 extends Scene
     }
 
     preload() {
+        this.load.image('back_stage3', 'assets/back_stage3.png');
         this.load.spritesheet('hachunemiku', 'assets/hachunemiku_sprite.png', { frameWidth: 512, frameHeight: 512 });
     }
 
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'background')
+        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'back_stage3')
             .setOrigin(0, 0);
         this.player = this.registry.get('player');
 
@@ -94,7 +95,6 @@ export class Stage3 extends Scene
         // 背景をスクロールさせる
         if (this.background_scroll) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール
-            this.background_scroll.tilePositionY += 0.5; // Y方向にスクロール（必要に応じて調整）
         }
 
         if (this.text !== this.previousText) {
@@ -104,7 +104,7 @@ export class Stage3 extends Scene
                 fontSize = window.innerHeight;
             }
             const newTextObject = this.add.text(10, window.innerHeight - 10, this.text, {
-                fontFamily: 'pop', fontSize: fontSize, color: '#ffff00'
+                fontFamily: 'pop', fontSize: fontSize, color: '#000000'
             });
 
             // 新しいテキストオブジェクトを物理エンティティとして追加
@@ -156,9 +156,8 @@ export class Stage3 extends Scene
 
                 // スコアアップのテキストを表示
                 const scoreUpText = this.add.text(this.gamePlayer?.x ?? 0, (this.gamePlayer?.y ?? 0) - (this.gamePlayer?.height ?? 0) / 2, "score up!!", {
-                    fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ff0000'
+                    fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ff0000'
                 });
-                scoreUpText.setStyle({ fontStyle: 'underline' });
                 this.time.addEvent({
                     delay: 500,
                     callback: () => {

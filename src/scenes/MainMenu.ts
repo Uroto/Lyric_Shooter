@@ -145,6 +145,7 @@ export class MainMenu extends Scene
     }
 
     preparePlay(songUrl:string, btn:HTMLButtonElement) {
+        btn.disabled = true;
         this.player.createFromSongUrl(songUrl)
                     .then(() => {
                         btn.removeAttribute('disabled');

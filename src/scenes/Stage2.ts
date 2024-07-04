@@ -57,18 +57,18 @@ export class Stage2 extends Scene
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
-            key: 'left',
+            key: 'miku_left',
             frames: [ { key: 'miku_fly', frame: 0 } ],
             frameRate: 10,
         });
 
         this.anims.create({
-            key: 'right',
+            key: 'miku_right',
             frames: [ { key: 'miku_fly', frame: 1 } ],
             frameRate: 10,
         });
 
-        this.gamePlayer.anims.play('left');
+        this.gamePlayer.anims.play('miku_left');
 
         // 重力の影響を受けないように設定
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
@@ -155,7 +155,7 @@ export class Stage2 extends Scene
         if (this.keyA?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = -200;
-                this.gamePlayer.anims.play('left');
+                this.gamePlayer.anims.play('miku_left');
             }
         }
         if (this.keyS?.isDown) {
@@ -166,7 +166,7 @@ export class Stage2 extends Scene
         if (this.keyD?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = 200;
-                this.gamePlayer.anims.play('right');
+                this.gamePlayer.anims.play('miku_right');
             }
         }
 

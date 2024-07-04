@@ -58,18 +58,18 @@ export class Stage1 extends Scene
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
-            key: 'left',
+            key: 'rinren_left',
             frames: [ { key: 'rinren', frame: 0 } ],
             frameRate: 10,
         });
 
         this.anims.create({
-            key: 'right',
+            key: 'rinren_right',
             frames: [ { key: 'rinren', frame: 1 } ],
             frameRate: 10,
         });
 
-        this.gamePlayer.anims.play('left');
+        this.gamePlayer.anims.play('rinren_left');
 
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
         gamePlayerBody.setCollideWorldBounds(true);
@@ -149,13 +149,13 @@ export class Stage1 extends Scene
         if (this.keyLeft?.isDown || this.keyA?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = -200;
-                this.gamePlayer.anims.play('left');
+                this.gamePlayer.anims.play('rinren_left');
             }
         }
         if (this.keyRight?.isDown || this.keyD?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = 200;
-                this.gamePlayer.anims.play('right');
+                this.gamePlayer.anims.play('rinren_right');
             }
         }
 

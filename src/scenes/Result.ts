@@ -6,6 +6,7 @@ export class Result extends Scene
     camera: Phaser.Cameras.Scene2D.Camera | undefined;
     background: Phaser.GameObjects.Graphics | undefined;
     gameover_text : Phaser.GameObjects.Text | undefined;
+    bonus_text: Phaser.GameObjects.Text | undefined;
     score: number | undefined;
     player: Player | undefined;
 
@@ -22,8 +23,8 @@ export class Result extends Scene
                                   .setAlpha(0.8);
 
         this.player = this.registry.get('player');
-
         this.score = this.registry.get('score');
+
         this.add.text(window.innerWidth / 2, window.innerHeight / 2, 'Score: ' + this.score?.toString(), {
             fontFamily: 'Arial', fontSize: 60, color: '#ffffff',
             align: 'center'
@@ -41,18 +42,17 @@ export class Result extends Scene
             this.scene.stop('Result');
 
             if (this.player?.video) {
-                try {
-                    this.player.requestStop(); // まず一時停止
-                    this.player.requestPlay();  // その後再生
-                } catch (error) {
-                    console.error("再生エラー:", error);
-                }
+                this.player.requestStop();
+                this.player.requestPlay();
             }
-            this.registry.set('score', 0);
-            this.scene.start('Stage1');
-          });
 
-          this.add.text(window.innerWidth / 2, window.innerHeight / 2 + 200, 'Back to Main Menu', {
+            const previousScene = this.registry.get('previousScene');
+            this.scene.start(previousScene);
+            this.registry.set('score', 0);
+            this.registry.set('previousScene', 'Result');
+        });
+
+        this.add.text(window.innerWidth / 2, window.innerHeight / 2 + 200, 'Back to Main Menu', {
             fontFamily: 'Arial', fontSize: 30, color: '#ffffff',
             align: 'center'
         }).setOrigin(0.5)
@@ -63,14 +63,36 @@ export class Result extends Scene
             this.scene.stop('Stage3');
             this.scene.stop('Result');
             this.scene.start('MainMenu');
-          });
+        });
 
-        // this.input.once('pointerdown', () => {
+        const previousScene = this.registry.get('previousScene');
+        const max_score = this.registry.get('max_score');
+        if (this.score && previousScene !== 'Stage3' && this.score >= max_score * 0.9) {
+            this.bonus_text = this.add.text(window.innerWidth / 2, window.innerHeight / 2 + 300, 'Bonus Stage!!', {
+                fontFamily: 'Arial', fontSize: 60, color: '#ffffff',
+                align: 'center'
+                
+            }).setOrigin(0.5)
+              .setActive(false)
+              .setAlpha(0.5)
+              .setInteractive()
+              .on('pointerdown', () => {
+                    this.player?.requestStop(); // まず一時停止
+                    this.player?.requestPlay();  // その後再生
 
-        //     this.scene.stop('Stage1');
-        //     this.scene.stop('Result');
-        //     this.scene.start('MainMenu');
+                    this.scene.stop('Stage1');
+                    this.scene.stop('Stage2');
+                    this.scene.stop('Stage3');
+                    this.scene.stop('Result');
+                    this.scene.start('Stage3');
+            });
+        }
 
-        // });
+        const songUrl = "https://piapro.jp/t/ELIC/20240130010349";
+        this.player?.createFromSongUrl(songUrl)
+                    .then(() => {
+                        this.bonus_text?.setActive(true);
+                        this.bonus_text?.setAlpha(1);
+                    });
     }
 }

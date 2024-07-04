@@ -52,7 +52,6 @@ export class MainMenu extends Scene
                     <option value="" disabled selected style="display:none;">曲を選択してください</option>
                     <option value="1">SUPERHERO / めろくる</option>
                     <option value="2">いつか君と話したミライは / タケノコ少年</option>
-                    <option value="3">リアリティ / 歩く人</option>
                 </select>
             </div>
         `
@@ -76,12 +75,8 @@ export class MainMenu extends Scene
 
         btn?.addEventListener('click', () => {
             if (this.player.video) {
-                try {
-                    this.player.requestPause(); // まず一時停止
-                    this.player.requestPlay();  // その後再生
-                } catch (error) {
-                    console.error("再生エラー:", error);
-                }
+                this.player.requestStop(); // まず一時停止
+                this.player.requestPlay();  // その後再生
             }
 
             switch (sel?.value){
@@ -99,12 +94,7 @@ export class MainMenu extends Scene
                     this.scene.stop('MainMenu');
                     this.scene.start('Stage2');
                     break;
-                case stage.stage3:
-                    this.scene.stop('Stage1');
-                    this.scene.stop('Stage2');
-                    this.scene.stop('Stage3');
-                    this.scene.stop('MainMenu');
-                    this.scene.start('Stage3');
+                default:
                     break;
             }
         });
@@ -121,10 +111,7 @@ export class MainMenu extends Scene
                         this.preparePlay("https://piapro.jp/t/--OD/20240202150903", btn);
                     }
                     break;
-                case stage.stage3:
-                    if (btn) {
-                        this.preparePlay("https://piapro.jp/t/ELIC/20240130010349", btn);
-                    }
+                default:
                     break;
             }
         });

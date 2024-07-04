@@ -97,7 +97,7 @@ export class Stage1 extends Scene
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             if (pointer.leftButtonDown()) {
-                const bullet = this.add.star(this.gamePlayer?.x, this.gamePlayer?.y, 5, 10, 15, 0xffff00, 1);
+                const bullet = this.add.star((this.gamePlayer?.x ?? 0), (this.gamePlayer?.y ?? 0) + 10, 5, 10, 15, 0xffff00, 1);
                 this.physics.add.existing(bullet);
                 this.bullets?.add(bullet);
 

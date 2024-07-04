@@ -129,7 +129,8 @@ export class Stage2 extends Scene
         }
 
         if (this.text !== this.previousText) {
-            const randomHeight = Math.random() * window.innerHeight;
+            const offset = window.innerHeight / 12;
+            const randomHeight = offset + Math.random() * (window.innerHeight - 2 * offset);
             const newTextObject = this.add.text(50, randomHeight, this.text, {
                 fontFamily: 'maruikoasu', fontSize: 40, color: '#ffff00'
             });

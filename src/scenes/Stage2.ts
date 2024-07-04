@@ -96,19 +96,28 @@ export class Stage2 extends Scene
 
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            const bullet = this.add.image((this.gamePlayer?.x ?? 0) - (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
-            this.physics.add.existing(bullet);
-            this.bullets?.add(bullet);
-
-            const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
             if (pointer.leftButtonDown()) {
-                bulletBody.setVelocity(-300, 0);
-            } else if (pointer.rightButtonDown()) {
-                bulletBody.setVelocity(300, 0);
+                
+                if (this.gamePlayer?.anims.currentAnim?.key === 'miku_left') {
+                    const bullet = this.add.image((this.gamePlayer?.x ?? 0) - (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
+                    this.physics.add.existing(bullet);
+                    this.bullets?.add(bullet);
+
+                    const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                    bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                    bulletBody.allowGravity = false;
+                    bulletBody.setVelocity(-300, 0);
+                } else {
+                    const bullet = this.add.image((this.gamePlayer?.x ?? 0) + (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
+                    this.physics.add.existing(bullet);
+                    this.bullets?.add(bullet);
+
+                    const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                    bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                    bulletBody.allowGravity = false;
+                    bulletBody.setVelocity(300, 0);
+                }
             }
-            
-            bulletBody.setCollideWorldBounds(true, 1, 1, true);
-            bulletBody.allowGravity = false;
         });
 
     }

@@ -96,19 +96,20 @@ export class Stage1 extends Scene
         
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            const bullet = this.add.star(this.gamePlayer?.x, this.gamePlayer?.y, 5, 10, 15, 0xffff00, 1);
-            this.physics.add.existing(bullet);
-            this.bullets?.add(bullet);
-
-            const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
             if (pointer.leftButtonDown()) {
-                bulletBody.setVelocity(-300, 0);
-                
-            } else if (pointer.rightButtonDown()) {
-                bulletBody.setVelocity(300, 0);
+                const bullet = this.add.star(this.gamePlayer?.x, this.gamePlayer?.y, 5, 10, 15, 0xffff00, 1);
+                this.physics.add.existing(bullet);
+                this.bullets?.add(bullet);
+
+                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                if (this.gamePlayer?.anims.currentAnim?.key === 'rinren_left') {
+                    bulletBody.setVelocity(-300, 0);
+                } else {
+                    bulletBody.setVelocity(300, 0);
+                }
+                bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                bulletBody.allowGravity = false;
             }
-            bulletBody.setCollideWorldBounds(true, 1, 1, true);
-            bulletBody.allowGravity = false;
         });
     }
 

@@ -58,18 +58,18 @@ export class Stage1 extends Scene
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
-            key: 'left',
+            key: 'rinren_left',
             frames: [ { key: 'rinren', frame: 0 } ],
             frameRate: 10,
         });
 
         this.anims.create({
-            key: 'right',
+            key: 'rinren_right',
             frames: [ { key: 'rinren', frame: 1 } ],
             frameRate: 10,
         });
 
-        this.gamePlayer.anims.play('left');
+        this.gamePlayer.anims.play('rinren_left');
 
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
         gamePlayerBody.setCollideWorldBounds(true);
@@ -96,19 +96,20 @@ export class Stage1 extends Scene
         
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            const bullet = this.add.star(this.gamePlayer?.x, this.gamePlayer?.y, 5, 10, 15, 0xffff00, 1);
-            this.physics.add.existing(bullet);
-            this.bullets?.add(bullet);
-
-            const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
             if (pointer.leftButtonDown()) {
-                bulletBody.setVelocity(-300, 0);
-                
-            } else if (pointer.rightButtonDown()) {
-                bulletBody.setVelocity(300, 0);
+                const bullet = this.add.star((this.gamePlayer?.x ?? 0), (this.gamePlayer?.y ?? 0) + 10, 5, 10, 15, 0xffff00, 1);
+                this.physics.add.existing(bullet);
+                this.bullets?.add(bullet);
+
+                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                if (this.gamePlayer?.anims.currentAnim?.key === 'rinren_left') {
+                    bulletBody.setVelocity(-300, 0);
+                } else {
+                    bulletBody.setVelocity(300, 0);
+                }
+                bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                bulletBody.allowGravity = false;
             }
-            bulletBody.setCollideWorldBounds(true, 1, 1, true);
-            bulletBody.allowGravity = false;
         });
     }
 
@@ -149,13 +150,13 @@ export class Stage1 extends Scene
         if (this.keyLeft?.isDown || this.keyA?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = -200;
-                this.gamePlayer.anims.play('left');
+                this.gamePlayer.anims.play('rinren_left');
             }
         }
         if (this.keyRight?.isDown || this.keyD?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = 200;
-                this.gamePlayer.anims.play('right');
+                this.gamePlayer.anims.play('rinren_right');
             }
         }
 

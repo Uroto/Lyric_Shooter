@@ -57,18 +57,18 @@ export class Stage2 extends Scene
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
-            key: 'left',
+            key: 'miku_left',
             frames: [ { key: 'miku_fly', frame: 0 } ],
             frameRate: 10,
         });
 
         this.anims.create({
-            key: 'right',
+            key: 'miku_right',
             frames: [ { key: 'miku_fly', frame: 1 } ],
             frameRate: 10,
         });
 
-        this.gamePlayer.anims.play('left');
+        this.gamePlayer.anims.play('miku_left');
 
         // 重力の影響を受けないように設定
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
@@ -96,19 +96,28 @@ export class Stage2 extends Scene
 
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            const bullet = this.add.image((this.gamePlayer?.x ?? 0) - (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
-            this.physics.add.existing(bullet);
-            this.bullets?.add(bullet);
-
-            const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
             if (pointer.leftButtonDown()) {
-                bulletBody.setVelocity(-300, 0);
-            } else if (pointer.rightButtonDown()) {
-                bulletBody.setVelocity(300, 0);
+                
+                if (this.gamePlayer?.anims.currentAnim?.key === 'miku_left') {
+                    const bullet = this.add.image((this.gamePlayer?.x ?? 0) - (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
+                    this.physics.add.existing(bullet);
+                    this.bullets?.add(bullet);
+
+                    const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                    bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                    bulletBody.allowGravity = false;
+                    bulletBody.setVelocity(-300, 0);
+                } else {
+                    const bullet = this.add.image((this.gamePlayer?.x ?? 0) + (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
+                    this.physics.add.existing(bullet);
+                    this.bullets?.add(bullet);
+
+                    const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+                    bulletBody.setCollideWorldBounds(true, 1, 1, true);
+                    bulletBody.allowGravity = false;
+                    bulletBody.setVelocity(300, 0);
+                }
             }
-            
-            bulletBody.setCollideWorldBounds(true, 1, 1, true);
-            bulletBody.allowGravity = false;
         });
 
     }
@@ -120,7 +129,8 @@ export class Stage2 extends Scene
         }
 
         if (this.text !== this.previousText) {
-            const randomHeight = Math.random() * window.innerHeight;
+            const offset = window.innerHeight / 12;
+            const randomHeight = offset + Math.random() * (window.innerHeight - 2 * offset);
             const newTextObject = this.add.text(50, randomHeight, this.text, {
                 fontFamily: 'maruikoasu', fontSize: 40, color: '#ffff00'
             });
@@ -155,7 +165,7 @@ export class Stage2 extends Scene
         if (this.keyA?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = -200;
-                this.gamePlayer.anims.play('left');
+                this.gamePlayer.anims.play('miku_left');
             }
         }
         if (this.keyS?.isDown) {
@@ -166,7 +176,7 @@ export class Stage2 extends Scene
         if (this.keyD?.isDown) {
             if (this.gamePlayer?.body) {
                 this.gamePlayer.body.velocity.x = 200;
-                this.gamePlayer.anims.play('right');
+                this.gamePlayer.anims.play('miku_right');
             }
         }
 

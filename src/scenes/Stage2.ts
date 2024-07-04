@@ -91,10 +91,7 @@ export class Stage2 extends Scene
         this.add.text(200, 10, "FINISH", {fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'})
                 .setInteractive()
                 .on('pointerdown', () => {
-                    this.scene.pause('Stage2');
-                    this.player?.requestPause();
-                    this.scene.launch('Result');
-                    this.registry.set('score', this.score);
+                    this.finish();
                 });
 
         this.input.mouse?.disableContextMenu();
@@ -174,20 +171,20 @@ export class Stage2 extends Scene
         }
 
         if (!this.player?.isPlaying) {
-            this.scene.pause('Stage2');
-            this.player?.requestPause();
-            this.registry.set('score', this.score);
-            this.scene.launch('Result');
+            this.finish();
         }
     }
 
     prepareLyrics() {
         if (this.player?.video) {
             let w: IWord | undefined = this.player.video.firstWord;
+            let max_score = 0;
             while (w) {
                 w.animate = this.animatedWord;
+                max_score += w.text.length * 10;
                 w = w.next;
             }
+            this.registry.set('max_score', max_score);
         }
     }
 
@@ -214,5 +211,14 @@ export class Stage2 extends Scene
             (body.gameObject as Phaser.GameObjects.Arc).setVisible(false);
             body.enable = false;
         }
+    }
+
+    finish() {
+        const currentSceneKey = this.scene.key;
+        this.scene.pause(currentSceneKey);
+        this.player?.requestPause();
+        this.registry.set('score', this.score);
+        this.registry.set('previousScene', currentSceneKey);
+        this.scene.launch('Result');
     }
 }

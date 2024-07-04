@@ -72,10 +72,7 @@ export class Stage3 extends Scene
         this.add.text(200, 10, "FINISH", {fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'})
                 .setInteractive()
                 .on('pointerdown', () => {
-                    this.scene.pause('Stage3');
-                    this.player?.requestPause();
-                    this.scene.launch('Result');
-                    this.registry.set('score', this.score);
+                    this.finish();
                 });
 
         this.gamePlayer.anims.play('walk');
@@ -122,10 +119,7 @@ export class Stage3 extends Scene
 
 
         if (!this.player?.isPlaying) {
-            this.scene.pause('Stage3');
-            this.player?.requestPause();
-            this.registry.set('score', this.score);
-            this.scene.launch('Result');
+            this.finish();
         }
     }
 
@@ -168,4 +162,13 @@ export class Stage3 extends Scene
         });
         this.scoreText?.setText("SCORE: " + this.score.toString());
     };
+
+    finish() {
+        const currentSceneKey = this.scene.key;
+        this.scene.pause(currentSceneKey);
+        this.player?.requestPause();
+        this.registry.set('score', this.score);
+        this.registry.set('previousScene', currentSceneKey);
+        this.scene.launch('Result');
+    }
 }

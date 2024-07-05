@@ -42,7 +42,7 @@ export class Result extends Scene
 
         const previousScene = this.registry.get('previousScene');
         const max_score = this.registry.get('max_score');
-        if (this.score !== undefined && previousScene !== 'Stage3' && this.score >= 0) {
+        if (this.score !== undefined && previousScene !== 'Stage3' && this.score >= max_score * 0.9) {
             this.bonus_text = this.add.text(bgX + 3 * bgWidth / 4, bgY + 3 * bgHeight / 4, 'Bonus Stage!!', {
                 fontFamily: 'mihiPixelmoji', fontSize: 30, color: '#ffffff',
                 align: 'center'

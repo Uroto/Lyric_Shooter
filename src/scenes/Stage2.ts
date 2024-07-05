@@ -74,6 +74,8 @@ export class Stage2 extends Scene
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
         gamePlayerBody.allowGravity = false;
         gamePlayerBody.setCollideWorldBounds(true);
+        gamePlayerBody.setDrag(200, 200)
+        gamePlayerBody.setFriction(0.5);
 
         this.keyW = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.keyA = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -83,8 +85,11 @@ export class Stage2 extends Scene
         this.physics.add.collider(this.gamePlayer, this.textObjects);
         this.physics.add.collider(this.bullets, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
         this.physics.world.on('worldbounds', (body: Phaser.Physics.Arcade.Body) => {
-            if (this.bullets?.contains(body.gameObject)) {
-                this.handleWorldBoundsCollision(body);
+            const gameObject = body.gameObject;
+            if (gameObject){
+                if (this.bullets?.contains(gameObject) || this.textObjects?.contains(gameObject)) {
+                    this.handleWorldBoundsCollision(body);
+                }
             }
         });
 
@@ -141,19 +146,13 @@ export class Stage2 extends Scene
 
             // 物理プロパティを設定
             const newTextBody = newTextObject.body as Phaser.Physics.Arcade.Body;
-            newTextBody.setCollideWorldBounds(true);
+            newTextBody.setCollideWorldBounds(true, 1, 1, true);
             newTextBody.setVelocity(200, 0); // 任意の速度を設定
             newTextBody.setBounce(0.8 - this.text.length * 0.05); // 反発係数を設定 
             newTextBody.allowGravity = false;
 
             // 前回のテキストを更新
             this.previousText = this.text;
-        }
-
-        // ゲームプレイヤーの速度をリセット
-        if (this.gamePlayer?.body) {
-            this.gamePlayer.body.velocity.x = 0;
-            this.gamePlayer.body.velocity.y = 0;
         }
 
         // ゲームプレイヤーを移動させる
@@ -217,8 +216,9 @@ export class Stage2 extends Scene
     };
 
     handleWorldBoundsCollision(body: Phaser.Physics.Arcade.Body) {
-        if (body.gameObject) {
-            (body.gameObject as Phaser.GameObjects.Arc).setVisible(false);
+        const gameObject = body.gameObject;
+        if (gameObject) {
+            (gameObject as Phaser.GameObjects.Arc).setVisible(false);
             body.enable = false;
         }
     }

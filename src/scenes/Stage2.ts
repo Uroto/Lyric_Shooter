@@ -43,8 +43,8 @@ export class Stage2 extends Scene
         this.bullets = this.physics.add.group();
 
         this.score = 0;
-        this.scoreText = this.add.text(10, 10, "SCORE: " + this.score.toString(), {
-            fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'
+        this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
+            fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
         });
 
         // テキストオブジェクトのグループを作成

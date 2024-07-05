@@ -11,7 +11,6 @@ export class MainMenu extends Scene
 {
     background: Phaser.GameObjects.Image | undefined;
     text = ""
-    isFullscreen: boolean = false;
     previousText: string = "";
     player: Player = new Player({
         app: {
@@ -65,12 +64,12 @@ export class MainMenu extends Scene
         this.add.text(10, 10, '＋')
                 .setInteractive()
                 .on('pointerup', () => {
-                    if (this.isFullscreen) {
+                    if (this.scale.isFullscreen) {
                         this.scale.stopFullscreen();
                     } else {
                         this.scale.startFullscreen();
                     }
-                    this.isFullscreen = !this.isFullscreen;
+                    this.scale.toggleFullscreen();
                 });
 
         btn?.addEventListener('click', () => {
@@ -115,33 +114,6 @@ export class MainMenu extends Scene
                     break;
             }
         });
-
-        this.scale.on('resize', this.resize, this);
-    }
-
-    resize(gameSize: Phaser.Structs.Size) {
-        const width = gameSize.width;
-        const height = gameSize.height;
-
-        // カメラのサイズを更新
-        if (this.cameras.main) {
-            this.cameras.main.setSize(width, height);
-        }
-
-        // ロゴの位置を更新
-        if (this.logo) {
-            this.logo.setPosition(width / 2, height / 4);
-        }
-
-        // ボタンの位置を更新
-        if (this.button) {
-            this.button.setPosition(width / 2, height / 2 + 100);
-        }
-
-        // セレクトボックスの位置を更新
-        if (this.select) {
-            this.select.setPosition(width / 2, height / 2);
-        }
     }
 
     preparePlay(songUrl:string, btn:HTMLButtonElement, sel:HTMLSelectElement) {

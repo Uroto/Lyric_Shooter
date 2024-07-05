@@ -34,7 +34,7 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'spaceship1');
+        this.background = this.add.image(this.scale.width / 2, this.scale.height / 2, 'spaceship1');
 
         this.registry.set('player', this.player);
 
@@ -55,9 +55,9 @@ export class MainMenu extends Scene
             </div>
         `
 
-        this.logo = this.add.image(window.innerWidth / 2, window.innerHeight / 4, 'logo');
-        this.select = this.add.dom(window.innerWidth / 2, window.innerHeight / 2).createFromHTML(select);
-        this.button = this.add.dom(window.innerWidth / 2, window.innerHeight / 2 + window.innerHeight / 8).createFromHTML(button);
+        this.logo = this.add.image(this.scale.width / 2, this.scale.height / 4, 'logo');
+        this.select = this.add.dom(this.scale.width / 2, this.scale.height / 2).createFromHTML(select);
+        this.button = this.add.dom(this.scale.width / 2, this.scale.height / 2 + this.scale.height / 8).createFromHTML(button);
         const sel = document.querySelector('select');
         const btn = document.querySelector('button');
 

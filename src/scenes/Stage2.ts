@@ -35,7 +35,7 @@ export class Stage2 extends Scene
 
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'back_stage2')
+        this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage2')
             .setOrigin(0, 0)
             .setAlpha(0.9);
         this.player = this.registry.get('player');
@@ -134,8 +134,8 @@ export class Stage2 extends Scene
         }
 
         if (this.text !== this.previousText) {
-            const offset = window.innerHeight / 12;
-            const randomHeight = offset + Math.random() * (window.innerHeight - 2 * offset);
+            const offset = this.scale.height / 12;
+            const randomHeight = offset + Math.random() * (this.scale.height - 2 * offset);
             const newTextObject = this.add.text(50, randomHeight, this.text, {
                 fontFamily: 'maruikoasu', fontSize: 40, color: '#ffff00'
             });

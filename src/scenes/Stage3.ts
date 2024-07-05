@@ -32,8 +32,8 @@ export class Stage3 extends Scene
         this.player = this.registry.get('player');
 
         this.score = 0;
-        this.scoreText = this.add.text(10, 10, "SCORE: " + this.score.toString(), {
-            fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'
+        this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
+            fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
         });
 
         // テキストオブジェクトのグループを作成

@@ -17,10 +17,10 @@ export class Result extends Scene
 
     create ()
     {   
-        const bgWidth = window.innerWidth / 2;
-        const bgHeight = window.innerHeight / 2;
-        const bgX = window.innerWidth / 4;
-        const bgY = window.innerHeight / 4;
+        const bgWidth = this.scale.width / 2;
+        const bgHeight = this.scale.height / 2;
+        const bgX = this.scale.width / 4;
+        const bgY = this.scale.height / 4;
 
         this.background = this.add.graphics()
                                   .fillStyle(0x000000, 1)

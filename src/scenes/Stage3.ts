@@ -27,7 +27,7 @@ export class Stage3 extends Scene
 
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'back_stage3')
+        this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage3')
             .setOrigin(0, 0);
         this.player = this.registry.get('player');
 
@@ -42,7 +42,7 @@ export class Stage3 extends Scene
         // 歌詞情報の準備
         this.prepareLyrics();
 
-        this.gamePlayer = this.add.sprite(window.innerWidth - 50, window.innerHeight - 50, 'hachunemiku');
+        this.gamePlayer = this.add.sprite(this.scale.width - 50, this.scale.height - 50, 'hachunemiku');
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
@@ -97,10 +97,10 @@ export class Stage3 extends Scene
         if (this.text !== this.previousText) {
             // 新しいテキストオブジェクトを作成して追加
             let fontSize = this.text.length * 70;
-            if (fontSize > window.innerHeight) {
-                fontSize = window.innerHeight;
+            if (fontSize > this.scale.height) {
+                fontSize = this.scale.height;
             }
-            const newTextObject = this.add.text(10, window.innerHeight - 10, this.text, {
+            const newTextObject = this.add.text(10, this.scale.height - 10, this.text, {
                 fontFamily: 'pop', fontSize: fontSize, color: '#000000'
             });
 

@@ -39,7 +39,7 @@ export class Stage1 extends Scene
 
     create ()
     {
-        this.background_scroll = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'back_stage1')
+        this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage1')
             .setOrigin(0, 0)
             .setAlpha(0.9);
         this.player = this.registry.get('player');
@@ -58,7 +58,7 @@ export class Stage1 extends Scene
         this.prepareLyrics();
 
 
-        this.gamePlayer = this.add.sprite(window.innerWidth - 50, window.innerHeight - 50, 'rinren');
+        this.gamePlayer = this.add.sprite(this.scale.width - 50, this.scale.height - 50, 'rinren');
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({

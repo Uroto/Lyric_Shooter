@@ -42,12 +42,12 @@ export class MainMenu extends Scene
         this.registry.set('score', 0);
 
         const button = `
-            <button class="button is-white" disabled>
+            <button class="button is-black" disabled>
                 Play!
             </button>
         `
         const select = `
-            <div class="select is-link">
+            <div class="select is-primary">
                 <select>
                     <option value="" disabled selected style="display:none;">曲を選択してください</option>
                     <option value="1">SUPERHERO / めろくる</option>
@@ -58,7 +58,7 @@ export class MainMenu extends Scene
 
         this.logo = this.add.image(window.innerWidth / 2, window.innerHeight / 4, 'logo');
         this.select = this.add.dom(window.innerWidth / 2, window.innerHeight / 2).createFromHTML(select);
-        this.button = this.add.dom(window.innerWidth / 2, window.innerHeight / 2 + window.innerHeight / 4).createFromHTML(button);
+        this.button = this.add.dom(window.innerWidth / 2, window.innerHeight / 2 + window.innerHeight / 8).createFromHTML(button);
         const sel = document.querySelector('select');
         const btn = document.querySelector('button');
 

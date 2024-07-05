@@ -1,6 +1,10 @@
 import { Scene, GameObjects } from 'phaser';
 import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
 
+interface CustomText extends Phaser.GameObjects.Text {
+    intervalID?: number;
+    timeoutID?: number;
+}
 export class Stage1 extends Scene
 {
     background: GameObjects.Image | undefined;
@@ -73,6 +77,7 @@ export class Stage1 extends Scene
 
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
         gamePlayerBody.setCollideWorldBounds(true);
+        gamePlayerBody.setDrag(100);
 
         this.keySpace = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.keyA = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -80,6 +85,7 @@ export class Stage1 extends Scene
         this.keyLeft = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.keyRight = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
 
+        this.physics.add.collider(this.textObjects, this.textObjects)
         this.physics.add.collider(this.gamePlayer, this.textObjects);
         this.physics.add.collider(this.bullets, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
         this.physics.world.on('worldbounds', (body: Phaser.Physics.Arcade.Body) => {
@@ -132,9 +138,24 @@ export class Stage1 extends Scene
             // 物理プロパティを設定
             const newTextBody = newTextObject.body as Phaser.Physics.Arcade.Body;
             newTextBody.setCollideWorldBounds(true);
-            const randomVelocity = Math.random() * 300;
+            const randomVelocity = 100 + Math.random() * 300;
             newTextBody.setVelocity(randomVelocity, 250); // 任意の速度を設定
-            newTextBody.setBounce(0.8 - this.text.length * 0.05); // 反発係数を設定 
+            newTextBody.setBounce(0.8 - this.text.length * 0.05); // 反発係数を設定
+
+            let intervalID: number;
+            let timeoutID: number;
+            timeoutID = setTimeout(() => {
+                intervalID = setInterval(() => {
+                    newTextObject.setVisible(!newTextObject.visible);
+                }, 50);
+                (newTextObject as CustomText).intervalID = intervalID;
+            }, 5000);
+            (newTextObject as CustomText).timeoutID = timeoutID;
+            setTimeout(() => {
+                newTextObject.setVisible(false);
+                newTextBody.enable = false;
+                clearInterval(intervalID);
+            }, 7000);
 
             // 前回のテキストを更新
             this.previousText = this.text;
@@ -200,6 +221,8 @@ export class Stage1 extends Scene
         (bullet as Phaser.GameObjects.Arc).setVisible(false);
         this.score += (text as Phaser.GameObjects.Text).text.length * 10;
         this.scoreText?.setText("SCORE: " + this.score.toString());
+        clearInterval((text as CustomText).intervalID);
+        clearTimeout((text as CustomText).timeoutID);
     };
 
     handleWorldBoundsCollision(body: Phaser.Physics.Arcade.Body) {

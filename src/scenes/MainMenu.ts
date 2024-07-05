@@ -103,12 +103,12 @@ export class MainMenu extends Scene
             switch (sel.value){
                 case stage.stage1:
                     if (btn) {
-                        this.preparePlay("https://piapro.jp/t/hZ35/20240130103028", btn);
+                        this.preparePlay("https://piapro.jp/t/hZ35/20240130103028", btn, sel);
                     }
                     break;
                 case stage.stage2:
                     if (btn) {
-                        this.preparePlay("https://piapro.jp/t/--OD/20240202150903", btn);
+                        this.preparePlay("https://piapro.jp/t/--OD/20240202150903", btn, sel);
                     }
                     break;
                 default:
@@ -144,11 +144,13 @@ export class MainMenu extends Scene
         }
     }
 
-    preparePlay(songUrl:string, btn:HTMLButtonElement) {
+    preparePlay(songUrl:string, btn:HTMLButtonElement, sel:HTMLSelectElement) {
         btn.disabled = true;
+        sel.disabled = true;
         this.player.createFromSongUrl(songUrl)
                     .then(() => {
                         btn.removeAttribute('disabled');
+                        sel.removeAttribute('disabled');
                     });
     }
 }

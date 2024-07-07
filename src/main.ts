@@ -4,6 +4,7 @@ import { Stage2 } from './scenes/Stage2';
 import { Stage3 } from './scenes/Stage3';
 import { Result } from './scenes/Result';
 import { MainMenu } from './scenes/MainMenu';
+import { VolumeModal } from './scenes/VolumeModal';
 import { Preloader } from './scenes/Preloader';
 
 import { Game, Types } from "phaser";
@@ -23,6 +24,7 @@ const config: Types.Core.GameConfig = {
         Boot,
         Preloader,
         MainMenu,
+        VolumeModal,
         Stage1,
         Stage2,
         Stage3,

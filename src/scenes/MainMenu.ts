@@ -21,6 +21,9 @@ export class MainMenu extends Scene
     logo: Phaser.GameObjects.Image | undefined;
     button: Phaser.GameObjects.DOMElement | undefined;
     select: Phaser.GameObjects.DOMElement | undefined;
+    fullscreen: Phaser.GameObjects.Sprite | undefined;
+    trophy: Phaser.GameObjects.Image | undefined;
+    volume: Phaser.GameObjects.Image | undefined;
 
     constructor ()
     {
@@ -30,6 +33,9 @@ export class MainMenu extends Scene
     preload ()
     {
         this.load.image('spaceship1', 'assets/spaceship1.png');
+        this.load.image('trophy', 'assets/trophy.png');
+        this.load.image('volume', 'assets/volume.png');
+        this.load.spritesheet('fullscreen', 'assets/fullscreen.png', { frameWidth: 100, frameHeight: 100 });
     }
 
     create ()
@@ -61,16 +67,48 @@ export class MainMenu extends Scene
         const sel = document.querySelector('select');
         const btn = document.querySelector('button');
 
-        this.add.text(10, 10, '＋')
-                .setInteractive()
-                .on('pointerup', () => {
-                    if (this.scale.isFullscreen) {
-                        this.scale.stopFullscreen();
-                    } else {
-                        this.scale.startFullscreen();
-                    }
-                    this.scale.toggleFullscreen();
-                });
+        this.trophy = this.add.image(3 * this.scale.width / 4, 4 * this.scale.height / 5, 'trophy')
+                        .setInteractive()                      
+                        .setAlpha(0.8);
+        this.hover(this.trophy);
+        
+        this.volume = this.add.image(3 * this.scale.width / 4 + 150, 4 * this.scale.height / 5, 'volume')
+                    .setInteractive()
+                    .setAlpha(0.8);
+        this.hover(this.volume);
+        this.volume.on('pointerup', () => {
+            this.scene.pause('MainMenu');
+            this.scene.launch('VolumeModal');
+            this.disableDOMElements();
+        });
+
+        this.fullscreen = this.add.sprite(3 * this.scale.width / 4 + 300, 4 * this.scale.height / 5, 'fullscreen')
+                            .setInteractive()
+                            .setAlpha(0.8);
+        this.hover(this.fullscreen);
+        
+        this.anims.create({
+            key: 'expand',
+            frames: [ { key: 'fullscreen', frame: 0 } ],
+            frameRate: 1,
+        });
+
+        this.anims.create({
+            key: 'compress',
+            frames: [ { key: 'fullscreen', frame: 1 } ],
+            frameRate: 1,
+        });
+
+        this.fullscreen?.on('pointerup', () => {
+            if (this.scale.isFullscreen) {
+                this.scale.stopFullscreen();
+                this.fullscreen?.anims.play('expand');
+            } else {
+                this.scale.startFullscreen();
+                this.fullscreen?.anims.play('compress');
+            }
+            this.scale.toggleFullscreen();
+        });
 
         btn?.addEventListener('click', () => {
             if (this.player.video) {
@@ -124,5 +162,21 @@ export class MainMenu extends Scene
                         btn.removeAttribute('disabled');
                         sel.removeAttribute('disabled');
                     });
+    }
+
+    hover(obj: Phaser.GameObjects.GameObject){
+        obj.on('pointerover', function (this: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite) {
+            this.setAlpha(1);
+        })
+           .on('pointerout', function (this: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite) {
+            this.setAlpha(0.8);
+        });
+    }
+
+    disableDOMElements() {
+        const btn = document.querySelector('button');
+        const sel = document.querySelector('select');
+        if (btn) btn.disabled = true;
+        if (sel) sel.disabled = true;
     }
 }

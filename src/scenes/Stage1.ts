@@ -17,6 +17,7 @@ export class Stage1 extends Scene
     gamePlayer: GameObjects.Sprite | undefined;
     bullets: GameObjects.Group | undefined;
     isJumping: boolean = false;
+    isPaused: boolean = false;
     keySpace: Phaser.Input.Keyboard.Key | undefined;
     keyA: Phaser.Input.Keyboard.Key | undefined;
     keyD: Phaser.Input.Keyboard.Key | undefined;
@@ -24,6 +25,8 @@ export class Stage1 extends Scene
     keyRight: Phaser.Input.Keyboard.Key | undefined;
     score: number = 0;
     scoreText: GameObjects.Text | undefined;
+    play: GameObjects.Sprite | undefined;
+    home: GameObjects.Image | undefined;
 
     constructor ()
     {
@@ -43,6 +46,45 @@ export class Stage1 extends Scene
             .setOrigin(0, 0)
             .setAlpha(0.9);
         this.player = this.registry.get('player');
+
+        this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
+            .setOrigin(0.5)
+            .setInteractive();
+        this.play.anims.create({
+            key: 'stop',
+            frames: [ { key: 'play', frame: 0 } ],
+            frameRate: 10,
+        });
+        this.play.anims.create({
+            key: 'play',
+            frames: [ { key: 'play', frame: 1 } ],
+            frameRate: 10,
+        });
+
+        this.play.on('pointerdown', () => {
+            if (this.player?.isPlaying) {
+                this.player.requestPause();
+                this.play?.anims.play('play');
+                this.isPaused = true;
+                this.gamePlayer?.setActive(false);
+                this.physics.world.pause();
+            } else {
+                this.player?.requestPlay();
+                this.play?.anims.play('stop');
+                this.isPaused = false;
+                this.gamePlayer?.setActive(true);
+                this.physics.world.resume();
+            }
+        });
+
+        this.home = this.add.image(this.scale.width - 50, 50, 'home')
+            .setOrigin(0.5)
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.player?.requestStop();
+                this.scene.stop('Stage1');
+                this.scene.start('MainMenu');
+            });
 
         this.bullets = this.physics.add.group();
 
@@ -93,12 +135,6 @@ export class Stage1 extends Scene
                 this.handleWorldBoundsCollision(body);
             }
         });
-
-        this.add.text(200, 10, "FINISH", {fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'})
-                .setInteractive()
-                .on('pointerdown', () => {
-                    this.finish();
-                });
         
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -121,7 +157,7 @@ export class Stage1 extends Scene
 
     update(time: number, delta: number): void {
         // 背景をスクロールさせる
-        if (this.background_scroll) {
+        if (this.background_scroll && !this.isPaused) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール
         }
 
@@ -187,8 +223,12 @@ export class Stage1 extends Scene
             }
         }
 
-        if (!this.player?.isPlaying) {
-            this.finish();
+        if (!this.player?.isPlaying && !this.isPaused) {
+            setTimeout(() => {
+                if (!this.player?.isPlaying && !this.isPaused) {
+                    this.finish();
+                }
+            }, 100);
         }
     }
 

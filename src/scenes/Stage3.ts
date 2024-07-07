@@ -13,6 +13,9 @@ export class Stage3 extends Scene
     gamePlayer: GameObjects.Sprite | undefined;
     score: number = 0;
     scoreText: GameObjects.Text | undefined;
+    play: GameObjects.Sprite | undefined;
+    home: GameObjects.Image | undefined;
+    isPaused: boolean = false;
 
     constructor ()
     {
@@ -30,6 +33,45 @@ export class Stage3 extends Scene
         this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage3')
             .setOrigin(0, 0);
         this.player = this.registry.get('player');
+
+        this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
+            .setOrigin(0.5)
+            .setInteractive();
+        this.play.anims.create({
+            key: 'stop',
+            frames: [ { key: 'play', frame: 0 } ],
+            frameRate: 10,
+        });
+        this.play.anims.create({
+            key: 'play',
+            frames: [ { key: 'play', frame: 1 } ],
+            frameRate: 10,
+        });
+
+        this.play.on('pointerdown', () => {
+            if (this.player?.isPlaying) {
+                this.player.requestPause();
+                this.play?.anims.play('play');
+                this.isPaused = true;
+                this.gamePlayer?.setActive(false);
+                this.physics.world.pause();
+            } else {
+                this.player?.requestPlay();
+                this.play?.anims.play('stop');
+                this.isPaused = false;
+                this.gamePlayer?.setActive(true);
+                this.physics.world.resume();
+            }
+        });
+
+        this.home = this.add.image(this.scale.width - 50, 50, 'home')
+            .setOrigin(0.5)
+            .setInteractive()
+            .on('pointerdown', () => {
+                this.player?.requestStop();
+                this.scene.stop('Stage1');
+                this.scene.start('MainMenu');
+            });
 
         this.score = 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
@@ -68,12 +110,6 @@ export class Stage3 extends Scene
         gamePlayerBody.setCollideWorldBounds(true);
 
         this.physics.add.overlap(this.gamePlayer, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
-
-        this.add.text(200, 10, "FINISH", {fontFamily: 'mihiPixelmoji', fontSize: 24, color: '#ffffff'})
-                .setInteractive()
-                .on('pointerdown', () => {
-                    this.finish();
-                });
 
         this.gamePlayer.anims.play('walk');
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -119,7 +155,11 @@ export class Stage3 extends Scene
 
 
         if (!this.player?.isPlaying) {
-            this.finish();
+            setTimeout(() => {
+                if (!this.player?.isPlaying && !this.isPaused) {
+                    this.finish();
+                }
+            }, 100);
         }
     }
 

@@ -34,12 +34,6 @@ export class Stage1 extends Scene
         this.animatedWord = this.animatedWord.bind(this);
     }
 
-    preload ()
-    {
-        this.load.image('back_stage1', 'assets/stage1_dot.png');
-        this.load.spritesheet('rinren', 'assets/rinren.png', { frameWidth: 256, frameHeight: 128 });
-    }
-
     create ()
     {
         this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage1')

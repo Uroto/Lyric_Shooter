@@ -24,11 +24,6 @@ export class Stage3 extends Scene
         this.animatedWord = this.animatedWord.bind(this);
     }
 
-    preload() {
-        this.load.image('back_stage3', 'assets/back_stage3.png');
-        this.load.spritesheet('hachunemiku', 'assets/hachunemiku_sprite.png', { frameWidth: 512, frameHeight: 512 });
-    }
-
     create ()
     {
         this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage3')

@@ -1,5 +1,5 @@
-import { Scene, GameObjects } from 'phaser';
-import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { Scene } from 'phaser';
+import { Player } from "textalive-app-api";
 
 const stage = Object.freeze({
     stage1: "1",

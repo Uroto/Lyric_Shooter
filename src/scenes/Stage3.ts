@@ -1,5 +1,5 @@
 import { Scene, GameObjects } from 'phaser';
-import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { IRenderingUnit, IWord, Player } from "textalive-app-api";
 
 export class Stage3 extends Scene
 {
@@ -123,7 +123,7 @@ export class Stage3 extends Scene
 
     }
 
-    update(time: number, delta: number): void {
+    update(): void {
         // 背景をスクロールさせる
         if (this.background_scroll) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール
@@ -179,7 +179,7 @@ export class Stage3 extends Scene
         }
     }
 
-    touch(player: GameObjects.GameObject, text: GameObjects.GameObject){
+    touch(text: GameObjects.GameObject){
         const textBody = text.body as Phaser.Physics.Arcade.Body;
         textBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);

@@ -1,5 +1,5 @@
 import { Scene, GameObjects } from 'phaser';
-import { IPlayerApp, IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { IRenderingUnit, IWord, Player } from "textalive-app-api";
 
 interface CustomText extends Phaser.GameObjects.Text {
     intervalID?: number;
@@ -150,7 +150,7 @@ export class Stage1 extends Scene
         });
     }
 
-    update(time: number, delta: number): void {
+    update(): void {
         // 背景をスクロールさせる
         if (this.background_scroll && !this.isPaused) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール

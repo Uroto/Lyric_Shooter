@@ -36,8 +36,6 @@ export class Preloader extends Scene
 
     create ()
     {
-        setTimeout(() => {
-            this.scene.start('MainMenu');
-        }, 3000);
+        this.scene.start('MainMenu');
     }
 }

@@ -44,7 +44,24 @@ export class MainMenu extends Scene
 
         this.registry.set('player', this.player);
 
-        this.registry.set('score', 0);
+        let score_list;
+        if (this.registry.get('score_list')){
+            score_list = this.registry.get('score_list');
+        } else {
+            score_list = [];
+        }
+        const sc_stage1 = this.registry.get('Stage1_score');
+        const sc_stage2 = this.registry.get('Stage2_score');
+        const sc_stage3 = this.registry.get('Stage3_score');
+
+        if (sc_stage1 !== undefined || sc_stage2 !== undefined || sc_stage3 !== undefined) {
+            const score = [sc_stage1, sc_stage2, sc_stage3];
+            score_list.push(score);
+        }
+        this.registry.set('score_list', score_list);
+        this.registry.set('Stage1_score', undefined);
+        this.registry.set('Stage2_score', undefined);
+        this.registry.set('Stage3_score', undefined);
 
         const button = `
             <button class="button is-black" disabled>
@@ -55,8 +72,8 @@ export class MainMenu extends Scene
             <div class="select is-primary">
                 <select>
                     <option value="" disabled selected style="display:none;">曲を選択してください</option>
-                    <option value="1">SUPERHERO / めろくる</option>
-                    <option value="2">いつか君と話したミライは / タケノコ少年</option>
+                    <option value="1">SUPERHERO / めろくる [stage1]</option>
+                    <option value="2">いつか君と話したミライは / タケノコ少年 [stage2]</option>
                 </select>
             </div>
         `
@@ -71,6 +88,11 @@ export class MainMenu extends Scene
                         .setInteractive()                      
                         .setAlpha(0.8);
         this.hover(this.trophy);
+        this.trophy.on('pointerup', () => {
+            this.scene.pause('MainMenu');
+            this.scene.launch('ScoreModal');
+            this.disableDOMElements();
+        });
         
         this.volume = this.add.image(3 * this.scale.width / 4 + 150, 4 * this.scale.height / 5, 'volume')
                     .setInteractive()
@@ -152,6 +174,8 @@ export class MainMenu extends Scene
                     break;
             }
         });
+
+        this.events.on('resume', this.enableDOMElements);
     }
 
     preparePlay(songUrl:string, btn:HTMLButtonElement, sel:HTMLSelectElement) {
@@ -178,5 +202,12 @@ export class MainMenu extends Scene
         const sel = document.querySelector('select');
         if (btn) btn.disabled = true;
         if (sel) sel.disabled = true;
+    }
+
+    enableDOMElements() {
+        const btn = document.querySelector('button');
+        const sel = document.querySelector('select');
+        if (btn) btn.disabled = false;
+        if (sel) sel.disabled = false;
     }
 }

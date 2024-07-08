@@ -12,6 +12,7 @@ export class Stage3 extends Scene
     player: Player | undefined;
     gamePlayer: GameObjects.Sprite | undefined;
     score: number = 0;
+    sumScore: number = 0;
     scoreText: GameObjects.Text | undefined;
     play: GameObjects.Sprite | undefined;
     home: GameObjects.Image | undefined;
@@ -74,7 +75,9 @@ export class Stage3 extends Scene
             });
 
         this.score = 0;
-        this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
+        const previousScene = this.registry.get('previousScene');
+        this.sumScore = this.registry.get(previousScene + '_score') ?? 0;
+        this.scoreText = this.add.text(20, 10, "SCORE: " + this.sumScore.toString(), {
             fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
         });
 
@@ -187,6 +190,7 @@ export class Stage3 extends Scene
         this.input.once('pointerdown', (pointer: Phaser.Input.Pointer) => {
             if (pointer.leftButtonDown()) {
                 this.score += (text as Phaser.GameObjects.Text).text.length * 10;
+                this.sumScore += (text as Phaser.GameObjects.Text).text.length * 10;
 
                 // スコアアップのテキストを表示
                 const scoreUpText = this.add.text(this.gamePlayer?.x ?? 0, (this.gamePlayer?.y ?? 0) - (this.gamePlayer?.height ?? 0) / 2, "score up!!", {
@@ -200,14 +204,14 @@ export class Stage3 extends Scene
                 });
             }
         });
-        this.scoreText?.setText("SCORE: " + this.score.toString());
+        this.scoreText?.setText("SCORE: " + this.sumScore.toString());
     };
 
     finish() {
         const currentSceneKey = this.scene.key;
         this.scene.pause(currentSceneKey);
         this.player?.requestPause();
-        this.registry.set('score', this.score);
+        this.registry.set(currentSceneKey + '_score', this.score);
         this.registry.set('previousScene', currentSceneKey);
         this.scene.launch('Result');
     }

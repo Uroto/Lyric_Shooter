@@ -6,6 +6,7 @@ import { Result } from './scenes/Result';
 import { MainMenu } from './scenes/MainMenu';
 import { VolumeModal } from './scenes/VolumeModal';
 import { Preloader } from './scenes/Preloader';
+import { ScoreModal } from './scenes/ScoreModal';
 
 import { Game, Types } from "phaser";
 
@@ -25,6 +26,7 @@ const config: Types.Core.GameConfig = {
         Preloader,
         MainMenu,
         VolumeModal,
+        ScoreModal,
         Stage1,
         Stage2,
         Stage3,

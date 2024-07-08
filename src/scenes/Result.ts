@@ -28,7 +28,10 @@ export class Result extends Scene
                                   .setAlpha(0.8);
 
         this.player = this.registry.get('player');
-        this.score = this.registry.get('score');
+
+        const previousScene = this.registry.get('previousScene');
+        
+        this.score = this.registry.get(previousScene + '_score');
 
         this.add.text(bgX + bgWidth / 2, bgY + bgHeight / 4, 'FINISH!!', {
             fontFamily: 'mihiPixelmoji', fontSize: 100, color: '#ffffff',
@@ -40,7 +43,6 @@ export class Result extends Scene
             align: 'center'
         }).setOrigin(0.5);
 
-        const previousScene = this.registry.get('previousScene');
         const max_score = this.registry.get('max_score');
         if (this.score !== undefined && previousScene !== 'Stage3' && this.score >= max_score * 0.9) {
             this.bonus_text = this.add.text(bgX + 3 * bgWidth / 4, bgY + 3 * bgHeight / 4, 'Bonus Stage!!', {

@@ -1,18 +1,21 @@
 import { Boot } from './scenes/Boot';
-import { Game as MainGame } from './scenes/Game';
-import { GameOver } from './scenes/GameOver';
+import { Stage1 } from './scenes/Stage1';
+import { Stage2 } from './scenes/Stage2';
+import { Stage3 } from './scenes/Stage3';
+import { Result } from './scenes/Result';
 import { MainMenu } from './scenes/MainMenu';
+import { VolumeModal } from './scenes/VolumeModal';
 import { Preloader } from './scenes/Preloader';
+import { ScoreModal } from './scenes/ScoreModal';
 
 import { Game, Types } from "phaser";
 
-//  Find out more information about the Game Config at:
-//  https://newdocs.phaser.io/docs/3.70.0/Phaser.Types.Core.GameConfig
 const config: Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
     parent: 'game-container',
+    fullscreenTarget: 'game-container',
     backgroundColor: '#000000',
     scale: {
         mode: Phaser.Scale.FIT,
@@ -22,8 +25,12 @@ const config: Types.Core.GameConfig = {
         Boot,
         Preloader,
         MainMenu,
-        MainGame,
-        GameOver
+        VolumeModal,
+        ScoreModal,
+        Stage1,
+        Stage2,
+        Stage3,
+        Result
     ],
     dom: {
 		createContainer: true
@@ -37,4 +44,6 @@ const config: Types.Core.GameConfig = {
     },
 };
 
-export default new Game(config);
+const game = new Game(config);
+
+export default game;

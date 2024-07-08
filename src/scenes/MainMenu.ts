@@ -132,6 +132,10 @@ export class MainMenu extends Scene
             this.scale.toggleFullscreen();
         });
 
+        this.scale.on('leavefullscreen', () => {
+            this.fullscreen?.anims.play('expand');
+        });
+
         btn?.addEventListener('click', () => {
             if (this.player.video) {
                 this.player.requestStop(); // まず一時停止

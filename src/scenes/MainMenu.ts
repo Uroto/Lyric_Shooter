@@ -14,7 +14,7 @@ export class MainMenu extends Scene
     previousText: string = "";
     player: Player = new Player({
         app: {
-            token: "j2L2DUexqaXONLyI",
+            token: import.meta.env.VITE_TEXT_ALIVE_API_KEY,
         },
         mediaElement: document.querySelector("#media") as HTMLElement,
     });

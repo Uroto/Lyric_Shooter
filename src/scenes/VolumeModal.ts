@@ -5,10 +5,6 @@ export class VolumeModal extends Scene {
         super({ key: 'VolumeModal' });
     }
 
-    preload() {
-        this.load.audio('test', 'assets/test.mp3');
-    }
-
     create() {
         // 背景を半透明の黒に設定
         this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.5).setOrigin(0);

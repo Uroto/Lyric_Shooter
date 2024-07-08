@@ -42,6 +42,7 @@ export class Stage2 extends Scene
             .setOrigin(0, 0)
             .setAlpha(0.9);
         this.player = this.registry.get('player');
+        this.isPaused = false;
 
         this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
             .setOrigin(0.5)
@@ -78,7 +79,7 @@ export class Stage2 extends Scene
             .setInteractive()
             .on('pointerdown', () => {
                 this.player?.requestStop();
-                this.scene.stop('Stage1');
+                this.scene.stop('Stage2');
                 this.scene.start('MainMenu');
             });
 
@@ -191,29 +192,32 @@ export class Stage2 extends Scene
             this.previousText = this.text;
         }
 
-        // ゲームプレイヤーを移動させる
-        if (this.keyW?.isDown) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.y = -200;
+        if (!this.isPaused) {
+            if (this.keyW?.isDown) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.y = -200;
+                }
+            }
+            if (this.keyA?.isDown) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.x = -200;
+                    this.gamePlayer.anims.play('miku_left');
+                }
+            }
+            if (this.keyS?.isDown) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.y = 200;
+                }
+            }
+            if (this.keyD?.isDown) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.x = 200;
+                    this.gamePlayer.anims.play('miku_right');
+                }
             }
         }
-        if (this.keyA?.isDown) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.x = -200;
-                this.gamePlayer.anims.play('miku_left');
-            }
-        }
-        if (this.keyS?.isDown) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.y = 200;
-            }
-        }
-        if (this.keyD?.isDown) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.x = 200;
-                this.gamePlayer.anims.play('miku_right');
-            }
-        }
+    
+
 
         if (!this.player?.isPlaying && !this.isPaused) {
             setTimeout(() => {

@@ -46,6 +46,7 @@ export class Stage1 extends Scene
             .setOrigin(0, 0)
             .setAlpha(0.9);
         this.player = this.registry.get('player');
+        this.isPaused = false;
 
         this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
             .setOrigin(0.5)
@@ -198,22 +199,24 @@ export class Stage1 extends Scene
         }
 
         // ゲームプレイヤーを移動させる
-        if (this.keySpace?.isDown && !this.isJumping) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.y = -500;
-                this.isJumping = true;
+        if (!this.isPaused) {
+            if (this.keySpace?.isDown && !this.isJumping) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.y = -500;
+                    this.isJumping = true;
+                }
             }
-        }
-        if (this.keyLeft?.isDown || this.keyA?.isDown) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.x = -200;
-                this.gamePlayer.anims.play('rinren_left');
+            if (this.keyLeft?.isDown || this.keyA?.isDown) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.x = -200;
+                    this.gamePlayer.anims.play('rinren_left');
+                }
             }
-        }
-        if (this.keyRight?.isDown || this.keyD?.isDown) {
-            if (this.gamePlayer?.body) {
-                this.gamePlayer.body.velocity.x = 200;
-                this.gamePlayer.anims.play('rinren_right');
+            if (this.keyRight?.isDown || this.keyD?.isDown) {
+                if (this.gamePlayer?.body) {
+                    this.gamePlayer.body.velocity.x = 200;
+                    this.gamePlayer.anims.play('rinren_right');
+                }
             }
         }
 

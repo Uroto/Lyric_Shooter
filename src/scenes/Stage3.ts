@@ -34,6 +34,7 @@ export class Stage3 extends Scene
         this.background_scroll = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'back_stage3')
             .setOrigin(0, 0);
         this.player = this.registry.get('player');
+        this.isPaused = false;
 
         this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
             .setOrigin(0.5)
@@ -70,7 +71,7 @@ export class Stage3 extends Scene
             .setInteractive()
             .on('pointerdown', () => {
                 this.player?.requestStop();
-                this.scene.stop('Stage1');
+                this.scene.stop('Stage3');
                 this.scene.start('MainMenu');
             });
 

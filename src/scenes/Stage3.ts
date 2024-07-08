@@ -102,7 +102,7 @@ export class Stage3 extends Scene
         this.anims.create({
             key: 'swing',
             frames: this.anims.generateFrameNumbers('hachunemiku', { start: 4, end: 7 }),
-            frameRate: 10,
+            frameRate: 30,
         });
 
         const gamePlayerBody = this.gamePlayer.body as Phaser.Physics.Arcade.Body;
@@ -179,7 +179,7 @@ export class Stage3 extends Scene
         }
     }
 
-    touch(text: GameObjects.GameObject){
+    touch(gamePlayer: GameObjects.Sprite, text: GameObjects.GameObject){
         const textBody = text.body as Phaser.Physics.Arcade.Body;
         textBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);
@@ -189,7 +189,7 @@ export class Stage3 extends Scene
                 this.sumScore += (text as Phaser.GameObjects.Text).text.length * 10;
 
                 // スコアアップのテキストを表示
-                const scoreUpText = this.add.text(this.gamePlayer?.x ?? 0, (this.gamePlayer?.y ?? 0) - (this.gamePlayer?.height ?? 0) / 2, "score up!!", {
+                const scoreUpText = this.add.text(gamePlayer?.x ?? 0, (gamePlayer?.y ?? 0) - (gamePlayer?.height ?? 0) / 2, "score up!!", {
                     fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ff0000'
                 });
                 this.time.addEvent({

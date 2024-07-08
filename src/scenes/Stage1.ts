@@ -276,7 +276,7 @@ export class Stage1 extends Scene
         const currentSceneKey = this.scene.key;
         this.scene.pause(currentSceneKey);
         this.player?.requestPause();
-        this.registry.set('score', this.score);
+        this.registry.set(currentSceneKey + '_score', this.score);
         this.registry.set('previousScene', currentSceneKey);
         this.scene.launch('Result');
     }

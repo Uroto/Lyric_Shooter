@@ -28,13 +28,6 @@ export class Stage2 extends Scene
         this.animatedWord = this.animatedWord.bind(this);
     }
 
-    preload ()
-    {
-        this.load.image('negi', 'assets/negi.png');
-        this.load.image('back_stage2', 'assets/stage2_dot.png');
-        this.load.image('night-sky1', 'assets/night-sky1.jpg');
-        this.load.spritesheet('miku_fly', 'assets/miku_fly.png', { frameWidth: 256, frameHeight: 128 });
-    }
 
     create ()
     {

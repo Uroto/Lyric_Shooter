@@ -9,7 +9,7 @@ export class Preloader extends Scene
 
     init ()
     {
-        this.cameras.main.setBackgroundColor('#ffffff');
+        this.cameras.main.setBackgroundColor('#C1E1E6');
         this.add.text(this.scale.width / 2, this.scale.height / 2 + this.scale.height / 3, 'Loading...', {
             fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#000000'
         });
@@ -25,13 +25,29 @@ export class Preloader extends Scene
 
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
         this.load.setPath('/assets');
 
+        // select
         this.load.image('logo', 'logo.png');
+        this.load.audio('test', 'test.mp3');
 
+        // game common
         this.load.spritesheet('play', 'play.png', { frameWidth: 70, frameHeight: 70 });
         this.load.image('home', 'home.png');
+        
+        // stage1
+        this.load.image('back_stage1', 'stage1_dot.png');
+        this.load.spritesheet('rinren', 'rinren.png', { frameWidth: 256, frameHeight: 128 });
+
+        // stage2
+        this.load.image('negi', 'negi.png');
+        this.load.image('back_stage2', 'stage2_dot.png');
+        this.load.image('night-sky1', 'night-sky1.jpg');
+        this.load.spritesheet('miku_fly', 'miku_fly.png', { frameWidth: 256, frameHeight: 128 });
+
+        // stage3
+        this.load.image('back_stage3', 'back_stage3.png');
+        this.load.spritesheet('hachunemiku', 'hachunemiku_sprite.png', { frameWidth: 512, frameHeight: 512 });
     }
 
     create ()

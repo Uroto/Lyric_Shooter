@@ -75,7 +75,7 @@ export class Stage3 extends Scene
         this.sumScore = this.registry.get(previousScene + '_score') ?? 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.sumScore.toString(), {
             fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
-        });
+        }).setStroke('#000000', 3);;
 
         // テキストオブジェクトのグループを作成
         this.textObjects = this.physics.add.group();
@@ -125,7 +125,7 @@ export class Stage3 extends Scene
 
     update(): void {
         // 背景をスクロールさせる
-        if (this.background_scroll) {
+        if (this.background_scroll && !this.isPaused) {
             this.background_scroll.tilePositionX += 1; // X方向にスクロール
         }
 
@@ -198,6 +198,24 @@ export class Stage3 extends Scene
                         scoreUpText.destroy();
                     }
                 });
+
+                for (let i = 0; i < 10; i++) {
+                    const textObject = text as Phaser.GameObjects.Text;
+                    const spark = this.add.image(textObject.x, textObject.y, 'spark');
+                    this.physics.add.existing(spark);
+                    const sparkBody = spark.body as Phaser.Physics.Arcade.Body;
+                    const angle = Phaser.Math.Between(0, 360);
+                    const speed = Phaser.Math.Between(100, 300);
+                    this.physics.velocityFromAngle(angle, speed, sparkBody.velocity);
+                    sparkBody.setCollideWorldBounds(true);
+                    sparkBody.setBounce(1, 1);
+                    sparkBody.setGravityY(300);
+        
+                    // 一定時間後にスプライトを削除
+                    this.time.delayedCall(300, () => {
+                        spark.destroy();
+                    });
+                }
             }
         });
         this.scoreText?.setText("SCORE: " + this.sumScore.toString());

@@ -34,16 +34,19 @@ export class Preloader extends Scene
         // game common
         this.load.spritesheet('play', 'play.png', { frameWidth: 70, frameHeight: 70 });
         this.load.image('home', 'home.png');
+        this.load.image('spark', 'spark.png');
         
         // stage1
         this.load.image('back_stage1', 'stage1_dot.png');
         this.load.spritesheet('rinren', 'rinren.png', { frameWidth: 256, frameHeight: 128 });
+        this.load.spritesheet('camome', 'camome.png', { frameWidth: 64, frameHeight: 64 });
 
         // stage2
         this.load.image('negi', 'negi.png');
         this.load.image('back_stage2', 'stage2_dot.png');
         this.load.image('night-sky1', 'night-sky1.jpg');
         this.load.spritesheet('miku_fly', 'miku_fly.png', { frameWidth: 256, frameHeight: 128 });
+        this.load.spritesheet('star', 'star.png', { frameWidth: 256, frameHeight: 256 });
 
         // stage3
         this.load.image('back_stage3', 'back_stage3.png');

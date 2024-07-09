@@ -16,6 +16,10 @@ export class Stage2 extends Scene
     keyA: Phaser.Input.Keyboard.Key | undefined;
     keyS: Phaser.Input.Keyboard.Key | undefined;
     keyD: Phaser.Input.Keyboard.Key | undefined;
+    keyLeft: Phaser.Input.Keyboard.Key | undefined;
+    keyRight: Phaser.Input.Keyboard.Key | undefined;
+    keyUp: Phaser.Input.Keyboard.Key | undefined;
+    keyDown: Phaser.Input.Keyboard.Key | undefined;
     score: number = 0;
     scoreText: GameObjects.Text | undefined;
     play: GameObjects.Sprite | undefined;
@@ -118,6 +122,10 @@ export class Stage2 extends Scene
         this.keyA = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.keyS = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.keyD = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.keyLeft = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.keyRight = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        this.keyUp = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.keyDown = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
 
         this.physics.add.collider(this.gamePlayer, this.textObjects);
         this.physics.add.collider(this.bullets, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
@@ -187,23 +195,23 @@ export class Stage2 extends Scene
         }
 
         if (!this.isPaused) {
-            if (this.keyW?.isDown) {
+            if (this.keyW?.isDown || this.keyUp?.isDown) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.y = -200;
                 }
             }
-            if (this.keyA?.isDown) {
+            if (this.keyA?.isDown || this.keyLeft?.isDown) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.x = -200;
                     this.gamePlayer.anims.play('miku_left');
                 }
             }
-            if (this.keyS?.isDown) {
+            if (this.keyS?.isDown || this.keyDown?.isDown) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.y = 200;
                 }
             }
-            if (this.keyD?.isDown) {
+            if (this.keyD?.isDown || this.keyRight?.isDown) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.x = 200;
                     this.gamePlayer.anims.play('miku_right');

@@ -1,6 +1,8 @@
 import { Scene } from 'phaser';
 
 export class VolumeModal extends Scene {
+    volume: number = 50;
+
     constructor() {
         super({ key: 'VolumeModal' });
     }
@@ -9,12 +11,13 @@ export class VolumeModal extends Scene {
         // 背景を半透明の黒に設定
         this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, 0.5).setOrigin(0);
 
+        this.volume = this.registry.get('volume') ?? 50;
         const volume = `
             <div id="volume_change">
                 <button class="button is-black">&times</button>
                 <div class="volume_change_content">
                     <h2>音量調節</h2>
-                    <input type="range" min="0" max="100" step="1" value="90" id="volumeSlider">
+                    <input type="range" min="0" max="100" step="1" value="${this.volume}" id="volumeSlider">
                 </div>
             </div>
         `
@@ -35,6 +38,7 @@ export class VolumeModal extends Scene {
         volumeSlider.addEventListener('input', () => {
             const mainMenu = this.scene.get('MainMenu') as any;
             mainMenu.player.volume = volumeSlider.value;
+            this.registry.set('volume', volumeSlider.value);
 
             // 音量を設定して音声を再生
             testSound.setVolume(parseFloat(volumeSlider.value) / 100);

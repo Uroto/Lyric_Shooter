@@ -21,6 +21,7 @@ export class Stage2 extends Scene
     play: GameObjects.Sprite | undefined;
     home: GameObjects.Image | undefined;
     isPaused: boolean = false;
+    scoreThreshold: number = 100;
 
     constructor ()
     {
@@ -81,7 +82,7 @@ export class Stage2 extends Scene
         this.score = 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
             fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
-        });
+        }).setStroke('#000000', 3);;
 
         // テキストオブジェクトのグループを作成
         this.textObjects = this.physics.add.group();
@@ -244,12 +245,35 @@ export class Stage2 extends Scene
     touch(bullet: GameObjects.GameObject, text: GameObjects.GameObject){
         const textBody = text.body as Phaser.Physics.Arcade.Body;
         const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+
+        for (let i = 0; i < 10; i++) {
+            const textObject = text as Phaser.GameObjects.Text;
+            const spark = this.add.image(textObject.x, textObject.y, 'spark');
+            this.physics.add.existing(spark);
+            const sparkBody = spark.body as Phaser.Physics.Arcade.Body;
+            const angle = Phaser.Math.Between(0, 360);
+            const speed = Phaser.Math.Between(100, 300);
+            this.physics.velocityFromAngle(angle, speed, sparkBody.velocity);
+            sparkBody.setCollideWorldBounds(true);
+            sparkBody.setBounce(1, 1);
+            sparkBody.setGravityY(300);
+
+            // 一定時間後にスプライトを削除
+            this.time.delayedCall(300, () => {
+                spark.destroy();
+            });
+        }
+
         textBody.enable = false;
         bulletBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);
         (bullet as Phaser.GameObjects.Arc).setVisible(false);
         this.score += (text as Phaser.GameObjects.Text).text.length * 10;
         this.scoreText?.setText("SCORE: " + this.score.toString());
+        if (this.score >= this.scoreThreshold) {
+            this.addBackgroundImage();
+            this.scoreThreshold += 100;
+        }
     };
 
     handleWorldBoundsCollision(body: Phaser.Physics.Arcade.Body) {
@@ -258,6 +282,25 @@ export class Stage2 extends Scene
             (gameObject as Phaser.GameObjects.Arc).setVisible(false);
             body.enable = false;
         }
+    }
+
+    addBackgroundImage() {
+        const upperTwoThirdsHeight = this.scale.height * 2 / 3;
+        const newImage = this.add.sprite(
+            Phaser.Math.Between(0, this.scale.width),
+            Phaser.Math.Between(0, upperTwoThirdsHeight),
+            'star'
+        );
+        this.anims.create({
+            key: 'star_move',
+            frames: this.anims.generateFrameNumbers('star', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: -1,
+            repeatDelay: 2000
+        });
+        newImage.anims.play('star_move');
+
+        newImage.setAlpha(0.5);
     }
 
     finish() {

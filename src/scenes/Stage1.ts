@@ -27,6 +27,7 @@ export class Stage1 extends Scene
     scoreText: GameObjects.Text | undefined;
     play: GameObjects.Sprite | undefined;
     home: GameObjects.Image | undefined;
+    scoreThreshold: number = 300; // スコアの閾値
 
     constructor ()
     {
@@ -86,7 +87,7 @@ export class Stage1 extends Scene
         this.score = 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
             fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
-        });
+        }).setStroke('#000000', 3);
 
         // テキストオブジェクトのグループを作成
         this.textObjects = this.physics.add.group();
@@ -159,7 +160,7 @@ export class Stage1 extends Scene
         if (this.text !== this.previousText) {
             // 新しいテキストオブジェクトを作成して追加
             const newTextObject = this.add.text(50, 50, this.text, {
-                fontFamily: 'sharp', fontSize: 75, color: '#ffff00'
+                fontFamily: 'sharp', fontSize: 75, color: '#ffffff'
             });
 
             // 新しいテキストオブジェクトを物理エンティティとして追加
@@ -252,12 +253,35 @@ export class Stage1 extends Scene
     touch(bullet: GameObjects.GameObject, text: GameObjects.GameObject){
         const textBody = text.body as Phaser.Physics.Arcade.Body;
         const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
+
+        for (let i = 0; i < 10; i++) {
+            const textObject = text as Phaser.GameObjects.Text;
+            const spark = this.add.image(textObject.x, textObject.y, 'spark');
+            this.physics.add.existing(spark);
+            const sparkBody = spark.body as Phaser.Physics.Arcade.Body;
+            const angle = Phaser.Math.Between(0, 360);
+            const speed = Phaser.Math.Between(100, 300);
+            this.physics.velocityFromAngle(angle, speed, sparkBody.velocity);
+            sparkBody.setCollideWorldBounds(true);
+            sparkBody.setBounce(1, 1);
+            sparkBody.setGravityY(300);
+
+            // 一定時間後にスプライトを削除
+            this.time.delayedCall(300, () => {
+                spark.destroy();
+            });
+        }
+
         textBody.enable = false;
         bulletBody.enable = false;
         (text as Phaser.GameObjects.Text).setVisible(false);
         (bullet as Phaser.GameObjects.Arc).setVisible(false);
         this.score += (text as Phaser.GameObjects.Text).text.length * 10;
         this.scoreText?.setText("SCORE: " + this.score.toString());
+        if (this.score >= this.scoreThreshold) {
+            this.addBackgroundImage();
+            this.scoreThreshold += 300;
+        }
         clearInterval((text as CustomText).intervalID);
         clearTimeout((text as CustomText).timeoutID);
     };
@@ -267,6 +291,24 @@ export class Stage1 extends Scene
             (body.gameObject as Phaser.GameObjects.Arc).setVisible(false);
             body.enable = false;
         }
+    }
+
+    addBackgroundImage() {
+        const upperTwoThirdsHeight = this.scale.height * 2 / 3;
+        const newImage = this.add.sprite(
+            Phaser.Math.Between(0, this.scale.width),
+            Phaser.Math.Between(0, upperTwoThirdsHeight),
+            'camome'
+        );
+        this.anims.create({
+            key: 'camome_move',
+            frames: this.anims.generateFrameNumbers('camome', { start: 0, end: 4 }),
+            frameRate: 10,
+            repeat: -1
+        });
+        newImage.anims.play('camome_move');
+
+        newImage.setAlpha(0.5);
     }
 
     finish() {

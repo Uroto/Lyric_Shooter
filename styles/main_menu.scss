@@ -1,9 +1,14 @@
 select {
-    font-family: maruikoasu;
+    font-family: mihiPixelmoji;
+    letter-spacing: 2px;
     text-align: center;
     width: 500px;
+
+    option {
+        letter-spacing: 2px;
+    }
 }
 
 button {
-    font-family: maruikoasu;
+    font-family: mihiPixelmoji;
 }

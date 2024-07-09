@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-    base: '/',
+    base: '/Lyric_Shooter/',
     build: {
         assetsInlineLimit: 0,
         outDir: 'dist',

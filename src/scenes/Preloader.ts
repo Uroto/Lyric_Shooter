@@ -25,7 +25,7 @@ export class Preloader extends Scene
 
     preload ()
     {
-        this.load.setPath('/Lyric_Shooter/assets');
+        this.load.setPath('./assets');
 
         // select
         this.load.image('logo', 'logo.png');

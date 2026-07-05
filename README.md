@@ -1,3 +1,4 @@
+# Lyric Shooter
 <img src="./public/reademe/titile.png" style="width: 100%" />
 
 ## URL

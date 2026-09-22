@@ -2,7 +2,8 @@ select {
     font-family: mihiPixelmoji;
     letter-spacing: 2px;
     text-align: center;
-    width: 500px;
+    width: min(500px, 72vw);
+    font-size: clamp(.75rem, 1.8vw, 1rem);
 
     option {
         letter-spacing: 2px;
@@ -11,4 +12,5 @@ select {
 
 button {
     font-family: mihiPixelmoji;
+    min-width: 96px;
 }

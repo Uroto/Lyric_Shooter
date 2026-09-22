@@ -1,5 +1,7 @@
 import Phaser, { Scene, GameObjects } from 'phaser';
 import { IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { MobileControls } from '../ui/MobileControls';
+import { isMobileDevice } from '../ui/device';
 
 export class Stage2 extends Scene
 {
@@ -26,6 +28,7 @@ export class Stage2 extends Scene
     home: GameObjects.Image | undefined;
     isPaused: boolean = false;
     scoreThreshold: number = 100;
+    mobileControls?: MobileControls;
 
     constructor ()
     {
@@ -42,7 +45,7 @@ export class Stage2 extends Scene
         this.player = this.registry.get('player');
         this.isPaused = false;
 
-        this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
+        this.play = this.add.sprite(this.scale.width - 120, 48, 'play').setDisplaySize(56, 56).setDepth(1100)
             .setOrigin(0.5)
             .setInteractive();
         this.play.anims.create({
@@ -72,7 +75,7 @@ export class Stage2 extends Scene
             }
         });
 
-        this.home = this.add.image(this.scale.width - 50, 50, 'home')
+        this.home = this.add.image(this.scale.width - 48, 48, 'home').setDisplaySize(56, 56).setDepth(1100)
             .setOrigin(0.5)
             .setInteractive()
             .on('pointerdown', () => {
@@ -85,8 +88,8 @@ export class Stage2 extends Scene
 
         this.score = 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
-            fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
-        }).setStroke('#000000', 3);;
+            fontFamily: 'mihiPixelmoji', fontSize: 32, color: '#ffffff'
+        }).setStroke('#000000', 3).setDepth(1100);
 
         // テキストオブジェクトのグループを作成
         this.textObjects = this.physics.add.group();
@@ -94,7 +97,7 @@ export class Stage2 extends Scene
         // 歌詞情報の準備
         this.prepareLyrics();
 
-        this.gamePlayer = this.add.sprite(1500, 500, 'miku_fly');
+        this.gamePlayer = this.add.sprite(this.scale.width - 100, this.scale.height / 2, 'miku_fly');
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
@@ -126,6 +129,10 @@ export class Stage2 extends Scene
         this.keyRight = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.keyUp = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.keyDown = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN);
+        if (isMobileDevice()) {
+            this.input.addPointer(2);
+            this.mobileControls = new MobileControls(this, 'stage2');
+        }
 
         this.physics.add.collider(this.gamePlayer, this.textObjects);
         this.physics.add.collider(this.bullets, this.textObjects, this.touch as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
@@ -140,29 +147,9 @@ export class Stage2 extends Scene
 
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            if (pointer.leftButtonDown()) {
-                
-                if (this.gamePlayer?.anims.currentAnim?.key === 'miku_left') {
-                    const bullet = this.add.image((this.gamePlayer?.x ?? 0) - (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
-                    this.physics.add.existing(bullet);
-                    this.bullets?.add(bullet);
-
-                    const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
-                    bulletBody.setCollideWorldBounds(true, 1, 1, true);
-                    bulletBody.allowGravity = false;
-                    bulletBody.setVelocity(-300, 0);
-                } else {
-                    const bullet = this.add.image((this.gamePlayer?.x ?? 0) + (this.gamePlayer?.width ?? 0) / 2, this.gamePlayer?.y ?? 0, 'negi');
-                    this.physics.add.existing(bullet);
-                    this.bullets?.add(bullet);
-
-                    const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
-                    bulletBody.setCollideWorldBounds(true, 1, 1, true);
-                    bulletBody.allowGravity = false;
-                    bulletBody.setVelocity(300, 0);
-                }
-            }
+            if (pointer.leftButtonDown() && !this.isPaused && !this.isUiPointer(pointer)) this.shoot();
         });
+        this.events.once('shutdown', () => this.mobileControls?.destroy());
 
     }
 
@@ -195,23 +182,23 @@ export class Stage2 extends Scene
         }
 
         if (!this.isPaused) {
-            if (this.keyW?.isDown || this.keyUp?.isDown) {
+            if (this.keyW?.isDown || this.keyUp?.isDown || this.mobileControls?.directions.up) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.y = -200;
                 }
             }
-            if (this.keyA?.isDown || this.keyLeft?.isDown) {
+            if (this.keyA?.isDown || this.keyLeft?.isDown || this.mobileControls?.directions.left) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.x = -200;
                     this.gamePlayer.anims.play('miku_left');
                 }
             }
-            if (this.keyS?.isDown || this.keyDown?.isDown) {
+            if (this.keyS?.isDown || this.keyDown?.isDown || this.mobileControls?.directions.down) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.y = 200;
                 }
             }
-            if (this.keyD?.isDown || this.keyRight?.isDown) {
+            if (this.keyD?.isDown || this.keyRight?.isDown || this.mobileControls?.directions.right) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.x = 200;
                     this.gamePlayer.anims.play('miku_right');
@@ -228,6 +215,23 @@ export class Stage2 extends Scene
                 }
             }, 100);
         }
+    }
+
+    shoot() {
+        const isLeft = this.gamePlayer?.anims.currentAnim?.key === 'miku_left';
+        const offset = (this.gamePlayer?.displayWidth ?? 0) / 2;
+        const bullet = this.add.image((this.gamePlayer?.x ?? 0) + (isLeft ? -offset : offset), this.gamePlayer?.y ?? 0, 'negi');
+        this.physics.add.existing(bullet);
+        this.bullets?.add(bullet);
+        const body = bullet.body as Phaser.Physics.Arcade.Body;
+        body.setCollideWorldBounds(true, 1, 1, true);
+        body.allowGravity = false;
+        body.setVelocity(isLeft ? -300 : 300, 0);
+    }
+
+    isUiPointer(pointer: Phaser.Input.Pointer): boolean {
+        return Boolean(this.mobileControls?.contains(pointer.x, pointer.y))
+            || (pointer.y < 90 && pointer.x > this.scale.width - 170);
     }
 
     prepareLyrics() {

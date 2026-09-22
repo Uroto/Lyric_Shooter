@@ -6,13 +6,22 @@
 
 html, body {
   overflow: hidden;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  touch-action: none;
 }
 
-canvas {
+#game-container {
   width: 100vw;
-  height: auto;
-  margin: 0;
-  padding: 0;
+  height: 100dvh;
+  position: relative;
+}
+
+#game-container canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 audio {
@@ -21,7 +30,52 @@ audio {
 
 #media {
   position: fixed;
-  right: 0;
-  bottom: 0;
+  right: max(0px, env(safe-area-inset-right));
+  bottom: max(0px, env(safe-area-inset-bottom));
   z-index: 100;
+  max-width: min(256px, 40vw);
+  transform-origin: right bottom;
+}
+
+@media (max-width: 900px), (max-height: 500px) {
+  #media {
+    transform: scale(.7);
+  }
+}
+
+#orientation-guard {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  place-items: center;
+  background: #071419;
+  color: #fff;
+  text-align: center;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  &.is-visible { display: grid; }
+  .orientation-message span { display: block; font-size: 5rem; line-height: 1; }
+  p { margin-top: 1rem; font-family: mihiPixelmoji, sans-serif; font-size: clamp(1rem, 5vw, 1.6rem); }
+}
+
+#how-to-play {
+  position: relative;
+  width: min(760px, 82vw);
+  max-height: 82vh;
+  overflow-y: auto;
+  padding: clamp(22px, 4vw, 46px);
+  border: 3px solid #fff;
+  border-radius: 18px;
+  background: rgba(5, 13, 18, 0.97);
+  color: #fff;
+  font-family: mihiPixelmoji, sans-serif;
+  line-height: 1.7;
+  letter-spacing: 0.08em;
+  .modal-close { position: absolute; top: 8px; right: 8px; min-width: 44px; min-height: 44px; font-size: 1.5rem; }
+  h2 { margin: 0 40px 16px; color: #fff; text-align: center; font-size: clamp(1.4rem, 3vw, 2.2rem); }
+  h3 { color: #64e7ee; font-size: clamp(1rem, 2vw, 1.35rem); }
+  p { font-size: clamp(.85rem, 1.8vw, 1.1rem); }
+  .lead, .bonus { text-align: center; }
+  .stage-rule { margin: 14px 0; padding: 10px 16px; border-left: 4px solid #64e7ee; background: rgba(255,255,255,.08); }
+  .bonus { color: #ffe36b; }
 }

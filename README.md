@@ -11,7 +11,7 @@
 歌詞弾幕に攻撃していくシューティングアプリです！  
 リズムに乗りながら攻撃を出して、攻撃弾幕と歌詞弾幕できれいなPVが作られていきます...!
 ### 遊び方
-1. ステージ選択(曲洗濯)
+1. ステージ選択(曲選択)
 <img src="./public/reademe/top.png" style="width: 100%" />
 
 - stage1(SUPERHERO / めろくる)
@@ -102,7 +102,7 @@ npm install
 cp .env.example .env
 ```
 ```
-VITE_YOUTUBE_API_KEY="開発者用のText Alive API Key"
+VITE_TEXT_ALIVE_API_KEY="開発者用のText Alive API Key"
 ```
 5. 開発サーバー起動
 ```

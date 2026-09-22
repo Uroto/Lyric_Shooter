@@ -1,5 +1,6 @@
 import Phaser, { Scene, GameObjects } from 'phaser';
 import { IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { BULLET_SPEED } from '../config/gameplay';
 import { MobileControls } from '../ui/MobileControls';
 import { isMobileDevice } from '../ui/device';
 
@@ -226,7 +227,7 @@ export class Stage2 extends Scene
         const body = bullet.body as Phaser.Physics.Arcade.Body;
         body.setCollideWorldBounds(true, 1, 1, true);
         body.allowGravity = false;
-        body.setVelocity(isLeft ? -300 : 300, 0);
+        body.setVelocity(isLeft ? -BULLET_SPEED : BULLET_SPEED, 0);
     }
 
     isUiPointer(pointer: Phaser.Input.Pointer): boolean {

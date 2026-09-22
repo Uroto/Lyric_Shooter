@@ -1,5 +1,6 @@
 import Phaser, { Scene, GameObjects } from 'phaser';
 import { IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { BULLET_SPEED } from '../config/gameplay';
 import { MobileControls } from '../ui/MobileControls';
 import { isMobileDevice } from '../ui/device';
 
@@ -234,7 +235,7 @@ export class Stage1 extends Scene
         this.physics.add.existing(bullet);
         this.bullets?.add(bullet);
         const body = bullet.body as Phaser.Physics.Arcade.Body;
-        body.setVelocity(this.gamePlayer?.anims.currentAnim?.key === 'rinren_left' ? -300 : 300, 0);
+        body.setVelocity(this.gamePlayer?.anims.currentAnim?.key === 'rinren_left' ? -BULLET_SPEED : BULLET_SPEED, 0);
         body.setCollideWorldBounds(true, 1, 1, true);
         body.allowGravity = false;
     }

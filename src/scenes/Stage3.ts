@@ -31,7 +31,7 @@ export class Stage3 extends Scene
         this.player = this.registry.get('player');
         this.isPaused = false;
 
-        this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
+        this.play = this.add.sprite(this.scale.width - 120, 48, 'play').setDisplaySize(56, 56).setDepth(1100)
             .setOrigin(0.5)
             .setInteractive();
         this.play.anims.create({
@@ -61,7 +61,7 @@ export class Stage3 extends Scene
             }
         });
 
-        this.home = this.add.image(this.scale.width - 50, 50, 'home')
+        this.home = this.add.image(this.scale.width - 48, 48, 'home').setDisplaySize(56, 56).setDepth(1100)
             .setOrigin(0.5)
             .setInteractive()
             .on('pointerdown', () => {
@@ -74,8 +74,8 @@ export class Stage3 extends Scene
         const previousScene = this.registry.get('previousScene');
         this.sumScore = this.registry.get(previousScene + '_score') ?? 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.sumScore.toString(), {
-            fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
-        }).setStroke('#000000', 3);;
+            fontFamily: 'mihiPixelmoji', fontSize: 32, color: '#ffffff'
+        }).setStroke('#000000', 3).setDepth(1100);
 
         // テキストオブジェクトのグループを作成
         this.textObjects = this.physics.add.group();

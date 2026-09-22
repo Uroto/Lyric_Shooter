@@ -1,5 +1,7 @@
 import Phaser, { Scene, GameObjects } from 'phaser';
 import { IRenderingUnit, IWord, Player } from "textalive-app-api";
+import { MobileControls } from '../ui/MobileControls';
+import { isMobileDevice } from '../ui/device';
 
 interface CustomText extends Phaser.GameObjects.Text {
     intervalID?: number;
@@ -28,6 +30,7 @@ export class Stage1 extends Scene
     play: GameObjects.Sprite | undefined;
     home: GameObjects.Image | undefined;
     scoreThreshold: number = 300; // スコアの閾値
+    mobileControls?: MobileControls;
 
     constructor ()
     {
@@ -42,8 +45,9 @@ export class Stage1 extends Scene
             .setAlpha(0.9);
         this.player = this.registry.get('player');
         this.isPaused = false;
+        this.isJumping = false;
 
-        this.play = this.add.sprite(this.scale.width - 130, 50, 'play')
+        this.play = this.add.sprite(this.scale.width - 120, 48, 'play').setDisplaySize(56, 56).setDepth(1100)
             .setOrigin(0.5)
             .setInteractive();
         this.play.anims.create({
@@ -73,7 +77,7 @@ export class Stage1 extends Scene
             }
         });
 
-        this.home = this.add.image(this.scale.width - 50, 50, 'home')
+        this.home = this.add.image(this.scale.width - 48, 48, 'home').setDisplaySize(56, 56).setDepth(1100)
             .setOrigin(0.5)
             .setInteractive()
             .on('pointerdown', () => {
@@ -86,8 +90,8 @@ export class Stage1 extends Scene
 
         this.score = 0;
         this.scoreText = this.add.text(20, 10, "SCORE: " + this.score.toString(), {
-            fontFamily: 'mihiPixelmoji', fontSize: 40, color: '#ffffff'
-        }).setStroke('#000000', 3);
+            fontFamily: 'mihiPixelmoji', fontSize: 32, color: '#ffffff'
+        }).setStroke('#000000', 3).setDepth(1100);
 
         // テキストオブジェクトのグループを作成
         this.textObjects = this.physics.add.group();
@@ -96,7 +100,7 @@ export class Stage1 extends Scene
         this.prepareLyrics();
 
 
-        this.gamePlayer = this.add.sprite(this.scale.width - 50, this.scale.height - 50, 'rinren');
+        this.gamePlayer = this.add.sprite(this.scale.width - 250, this.scale.height - 64, 'rinren');
         this.physics.add.existing(this.gamePlayer);
 
         this.anims.create({
@@ -122,6 +126,12 @@ export class Stage1 extends Scene
         this.keyD = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.keyLeft = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.keyRight = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        if (isMobileDevice()) {
+            this.input.addPointer(2);
+            // Handle a touch jump in the pointer event itself. A short tap can start
+            // and end between two update frames on mobile browsers.
+            this.mobileControls = new MobileControls(this, 'stage1', () => this.jump());
+        }
 
         this.physics.add.collider(this.textObjects, this.textObjects)
         this.physics.add.collider(this.gamePlayer, this.textObjects);
@@ -134,21 +144,9 @@ export class Stage1 extends Scene
         
         this.input.mouse?.disableContextMenu();
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            if (pointer.leftButtonDown()) {
-                const bullet = this.add.star((this.gamePlayer?.x ?? 0), (this.gamePlayer?.y ?? 0) + 10, 5, 10, 15, 0xffff00, 1);
-                this.physics.add.existing(bullet);
-                this.bullets?.add(bullet);
-
-                const bulletBody = bullet.body as Phaser.Physics.Arcade.Body;
-                if (this.gamePlayer?.anims.currentAnim?.key === 'rinren_left') {
-                    bulletBody.setVelocity(-300, 0);
-                } else {
-                    bulletBody.setVelocity(300, 0);
-                }
-                bulletBody.setCollideWorldBounds(true, 1, 1, true);
-                bulletBody.allowGravity = false;
-            }
+            if (pointer.leftButtonDown() && !this.isPaused && !this.isUiPointer(pointer)) this.shoot();
         });
+        this.events.once('shutdown', () => this.mobileControls?.destroy());
     }
 
     update(): void {
@@ -195,19 +193,14 @@ export class Stage1 extends Scene
 
         // ゲームプレイヤーを移動させる
         if (!this.isPaused) {
-            if (this.keySpace?.isDown && !this.isJumping) {
-                if (this.gamePlayer?.body) {
-                    this.gamePlayer.body.velocity.y = -500;
-                    this.isJumping = true;
-                }
-            }
-            if (this.keyLeft?.isDown || this.keyA?.isDown) {
+            if (this.keySpace?.isDown) this.jump();
+            if (this.keyLeft?.isDown || this.keyA?.isDown || this.mobileControls?.directions.left) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.x = -200;
                     this.gamePlayer.anims.play('rinren_left');
                 }
             }
-            if (this.keyRight?.isDown || this.keyD?.isDown) {
+            if (this.keyRight?.isDown || this.keyD?.isDown || this.mobileControls?.directions.right) {
                 if (this.gamePlayer?.body) {
                     this.gamePlayer.body.velocity.x = 200;
                     this.gamePlayer.anims.play('rinren_right');
@@ -228,6 +221,27 @@ export class Stage1 extends Scene
                 }
             }, 100);
         }
+    }
+
+    private jump(): void {
+        if (this.isPaused || this.isJumping || !this.gamePlayer?.body) return;
+        this.gamePlayer.body.velocity.y = -500;
+        this.isJumping = true;
+    }
+
+    shoot() {
+        const bullet = this.add.star(this.gamePlayer?.x ?? 0, (this.gamePlayer?.y ?? 0) + 10, 5, 10, 15, 0xffff00, 1);
+        this.physics.add.existing(bullet);
+        this.bullets?.add(bullet);
+        const body = bullet.body as Phaser.Physics.Arcade.Body;
+        body.setVelocity(this.gamePlayer?.anims.currentAnim?.key === 'rinren_left' ? -300 : 300, 0);
+        body.setCollideWorldBounds(true, 1, 1, true);
+        body.allowGravity = false;
+    }
+
+    isUiPointer(pointer: Phaser.Input.Pointer): boolean {
+        return Boolean(this.mobileControls?.contains(pointer.x, pointer.y))
+            || (pointer.y < 90 && pointer.x > this.scale.width - 170);
     }
 
     prepareLyrics() {

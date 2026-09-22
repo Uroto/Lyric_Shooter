@@ -34,12 +34,12 @@ export class Result extends Scene
         this.score = this.registry.get(previousScene + '_score');
 
         this.add.text(bgX + bgWidth / 2, bgY + bgHeight / 4, 'FINISH!!', {
-            fontFamily: 'mihiPixelmoji', fontSize: 100, color: '#ffffff',
+            fontFamily: 'mihiPixelmoji', fontSize: 64, color: '#ffffff',
             align: 'center'
         }).setOrigin(0.5);
 
         this.add.text(bgX + bgWidth / 2, bgY + bgHeight / 2, 'Score: ' + this.score?.toString(), {
-            fontFamily: 'mihiPixelmoji', fontSize: 50, color: '#ffffff',
+            fontFamily: 'mihiPixelmoji', fontSize: 38, color: '#ffffff',
             align: 'center'
         }).setOrigin(0.5);
 
@@ -47,7 +47,7 @@ export class Result extends Scene
         this.bonus_text = undefined;
         if (this.score !== undefined && previousScene !== 'Stage3' && this.score >= max_score * 0.9) {
             this.bonus_text = this.add.text(bgX + 3 * bgWidth / 4, bgY + 3 * bgHeight / 4, 'Bonus Stage!!', {
-                fontFamily: 'mihiPixelmoji', fontSize: 30, color: '#ffffff',
+                fontFamily: 'mihiPixelmoji', fontSize: 22, color: '#ffffff',
                 align: 'center'
                 
             }).setOrigin(0.5)
@@ -82,7 +82,7 @@ export class Result extends Scene
             backToMainMenueX = bgX + bgWidth / 2;
         }
         this.backToMainMenu_text = this.add.text(backToMainMenueX, bgY + 3 * bgHeight / 4, 'Back to Main Menu', {
-            fontFamily: 'mihiPixelmoji', fontSize: 30, color: '#ffffff',
+            fontFamily: 'mihiPixelmoji', fontSize: 22, color: '#ffffff',
         }).setOrigin(0.5)
           .setInteractive();
         

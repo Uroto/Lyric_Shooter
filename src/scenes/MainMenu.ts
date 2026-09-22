@@ -24,6 +24,7 @@ export class MainMenu extends Scene
     fullscreen: Phaser.GameObjects.Sprite | undefined;
     trophy: Phaser.GameObjects.Image | undefined;
     volume: Phaser.GameObjects.Image | undefined;
+    help: Phaser.GameObjects.Text | undefined;
 
     constructor ()
     {
@@ -40,7 +41,7 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(this.scale.width / 2, this.scale.height / 2, 'spaceship1');
+        this.background = this.add.image(this.scale.width / 2, this.scale.height / 2, 'spaceship1').setDisplaySize(this.scale.width, this.scale.height);
 
         this.registry.set('player', this.player);
 
@@ -81,10 +82,11 @@ export class MainMenu extends Scene
         this.logo = this.add.image(this.scale.width / 2, this.scale.height / 4, 'logo');
         this.select = this.add.dom(this.scale.width / 2, this.scale.height / 2).createFromHTML(select);
         this.button = this.add.dom(this.scale.width / 2, this.scale.height / 2 + this.scale.height / 8).createFromHTML(button);
-        const sel = document.querySelector('select');
-        const btn = document.querySelector('button');
+        const sel = this.select.node.querySelector('select');
+        const btn = this.button.node.querySelector('button');
 
-        this.trophy = this.add.image(3 * this.scale.width / 4, 4 * this.scale.height / 5, 'trophy')
+        const iconY = this.scale.height - 72;
+        this.trophy = this.add.image(this.scale.width - 310, iconY, 'trophy').setDisplaySize(68, 68)
                         .setInteractive()                      
                         .setAlpha(0.8);
         this.hover(this.trophy);
@@ -94,7 +96,7 @@ export class MainMenu extends Scene
             this.disableDOMElements();
         });
         
-        this.volume = this.add.image(3 * this.scale.width / 4 + 150, 4 * this.scale.height / 5, 'volume')
+        this.volume = this.add.image(this.scale.width - 220, iconY, 'volume').setDisplaySize(68, 68)
                     .setInteractive()
                     .setAlpha(0.8);
         this.hover(this.volume);
@@ -104,7 +106,7 @@ export class MainMenu extends Scene
             this.disableDOMElements();
         });
 
-        this.fullscreen = this.add.sprite(3 * this.scale.width / 4 + 300, 4 * this.scale.height / 5, 'fullscreen')
+        this.fullscreen = this.add.sprite(this.scale.width - 130, iconY, 'fullscreen').setDisplaySize(68, 68)
                             .setInteractive()
                             .setAlpha(0.8);
         this.hover(this.fullscreen);
@@ -134,6 +136,12 @@ export class MainMenu extends Scene
         this.scale.on('leavefullscreen', () => {
             this.fullscreen?.anims.play('expand');
         });
+
+        this.help = this.add.text(54, iconY, '?', {
+            fontFamily: 'mihiPixelmoji', fontSize: 38, color: '#ffffff', backgroundColor: '#000000'
+        }).setPadding(16, 4).setOrigin(0.5).setInteractive({ useHandCursor: true }).setAlpha(0.8);
+        this.hover(this.help);
+        this.help.on('pointerup', () => this.openHowTo());
 
         btn?.addEventListener('click', () => {
             if (this.player.video) {
@@ -179,6 +187,9 @@ export class MainMenu extends Scene
         });
 
         this.events.on('resume', this.enableDOMElements);
+        if (!localStorage.getItem('lyric-shooter-how-to-seen')) {
+            this.time.delayedCall(0, () => this.openHowTo());
+        }
     }
 
     preparePlay(songUrl:string, btn:HTMLButtonElement, sel:HTMLSelectElement) {
@@ -193,10 +204,10 @@ export class MainMenu extends Scene
     }
 
     hover(obj: Phaser.GameObjects.GameObject){
-        obj.on('pointerover', function (this: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite) {
+        obj.on('pointerover', function (this: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Text) {
             this.setAlpha(1);
         })
-           .on('pointerout', function (this: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite) {
+           .on('pointerout', function (this: Phaser.GameObjects.Image | Phaser.GameObjects.Sprite | Phaser.GameObjects.Text) {
             this.setAlpha(0.8);
         });
     }
@@ -213,5 +224,11 @@ export class MainMenu extends Scene
         const sel = document.querySelector('select');
         if (btn) btn.disabled = false;
         if (sel) sel.disabled = false;
+    }
+
+    openHowTo() {
+        this.scene.pause('MainMenu');
+        this.scene.launch('HowToPlayModal');
+        this.disableDOMElements();
     }
 }

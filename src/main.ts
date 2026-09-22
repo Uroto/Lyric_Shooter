@@ -7,13 +7,15 @@ import { MainMenu } from './scenes/MainMenu';
 import { VolumeModal } from './scenes/VolumeModal';
 import { Preloader } from './scenes/Preloader';
 import { ScoreModal } from './scenes/ScoreModal';
+import { HowToPlayModal } from './scenes/HowToPlayModal';
+import { GAME_HEIGHT, GAME_WIDTH, setupOrientationGuard } from './ui/device';
 
 import Phaser, { Game, Types } from "phaser";
 
 const config: Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
     parent: 'game-container',
     fullscreenTarget: 'game-container',
     backgroundColor: '#000000',
@@ -27,6 +29,7 @@ const config: Types.Core.GameConfig = {
         MainMenu,
         VolumeModal,
         ScoreModal,
+        HowToPlayModal,
         Stage1,
         Stage2,
         Stage3,
@@ -45,5 +48,6 @@ const config: Types.Core.GameConfig = {
 };
 
 const game = new Game(config);
+setupOrientationGuard();
 
 export default game;

@@ -116,7 +116,7 @@ npm run preview
 ## 使用技術
 - Vite
 - TypeScript
-- Phaser3
+- Phaser4
 - HTML/CSS
 
 ## 最後に

@@ -8,7 +8,7 @@ import { VolumeModal } from './scenes/VolumeModal';
 import { Preloader } from './scenes/Preloader';
 import { ScoreModal } from './scenes/ScoreModal';
 
-import { Game, Types } from "phaser";
+import Phaser, { Game, Types } from "phaser";
 
 const config: Types.Core.GameConfig = {
     type: Phaser.AUTO,

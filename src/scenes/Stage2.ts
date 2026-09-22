@@ -1,4 +1,4 @@
-import { Scene, GameObjects } from 'phaser';
+import Phaser, { Scene, GameObjects } from 'phaser';
 import { IRenderingUnit, IWord, Player } from "textalive-app-api";
 
 export class Stage2 extends Scene

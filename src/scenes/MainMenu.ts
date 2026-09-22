@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import Phaser, { Scene } from 'phaser';
 import { Player } from "textalive-app-api";
 
 const stage = Object.freeze({
@@ -129,7 +129,6 @@ export class MainMenu extends Scene
                 this.scale.startFullscreen();
                 this.fullscreen?.anims.play('compress');
             }
-            this.scale.toggleFullscreen();
         });
 
         this.scale.on('leavefullscreen', () => {
@@ -185,7 +184,8 @@ export class MainMenu extends Scene
     preparePlay(songUrl:string, btn:HTMLButtonElement, sel:HTMLSelectElement) {
         btn.disabled = true;
         sel.disabled = true;
-        this.player.createFromSongUrl(songUrl)
+        const songPath = songUrl.replace(/^https?:\/\//, "");
+        this.player.createFromSongPath(songPath)
                     .then(() => {
                         btn.removeAttribute('disabled');
                         sel.removeAttribute('disabled');

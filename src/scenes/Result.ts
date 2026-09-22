@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import Phaser, { Scene } from 'phaser';
 import { Player } from 'textalive-app-api';
 
 export class Result extends Scene
@@ -102,8 +102,8 @@ export class Result extends Scene
             underline.setVisible(false);
         });
 
-        const songUrl = "https://piapro.jp/t/ELIC/20240130010349";
-        this.player?.createFromSongUrl(songUrl)
+        const songPath = "piapro.jp/t/ELIC/20240130010349";
+        this.player?.createFromSongPath(songPath)
                     .then(() => {
                         this.bonus_text?.setActive(true);
                         this.bonus_text?.setAlpha(1);

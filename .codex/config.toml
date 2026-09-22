@@ -1,0 +1,7 @@
+default_permissions = "uroto-website"
+
+[permissions.uroto-website]
+extends = ":workspace"
+
+[permissions.uroto-website.filesystem.":workspace_roots"]
+"**/.env.local" = "deny"
